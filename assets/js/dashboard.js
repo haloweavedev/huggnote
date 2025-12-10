@@ -1,3 +1,27 @@
+// -- Configuration --
+const API_BASE_URL = (() => {
+    const hostname = window.location.hostname;
+    const port = window.location.port;
+    
+    // If running on standard Node server port, use relative path
+    if (port === '3000') {
+        return '';
+    }
+    
+    // If running on VS Code Live Server or other local dev server, point to Node backend
+    if (hostname === 'localhost' || hostname === '127.0.0.1') {
+        return 'http://localhost:3000';
+    }
+    
+    // For production, assume relative path if served by the same backend, 
+    // or you can hardcode your production backend URL here if separated.
+    return ''; 
+})();
+
+function getApiUrl(endpoint) {
+    return `${API_BASE_URL}${endpoint}`;
+}
+
 document.addEventListener("DOMContentLoaded", () => {
   // Auth Check
   const user = localStorage.getItem("huggnoteUser");
@@ -168,7 +192,7 @@ function setupFormHandler() {
 
     try {
       console.log("[DASHBOARD] Sending request to /api/create-prompt...");
-      const response = await fetch('/api/create-prompt', {
+      const response = await fetch(getApiUrl('/api/create-prompt'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formObject)
@@ -243,7 +267,7 @@ function setupFormHandler() {
 
            console.log("[DASHBOARD] Sending generation request to /api/generate:", payload);
 
-           const response = await fetch('/api/generate', {
+           const response = await fetch(getApiUrl('/api/generate'), {
                method: 'POST',
                headers: { 'Content-Type': 'application/json' },
                body: JSON.stringify(payload)
@@ -326,7 +350,7 @@ async function startPolling(song, eta) {
             const checkId = song.conversionId1 || song.taskId;
             const idType = song.conversionId1 ? 'conversion_id' : 'task_id';
 
-            const response = await fetch(`/api/status/${checkId}?idType=${idType}&conversionType=MUSIC_AI`);
+            const response = await fetch(getApiUrl(`/api/status/${checkId}?idType=${idType}&conversionType=MUSIC_AI`));
             const data = await response.json();
             
             console.log(`[POLLING] Status check (${attempts}):`, data);
