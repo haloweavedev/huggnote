@@ -371,15 +371,16 @@ async function startPolling(song, eta) {
                         const c = data.conversion;
                         
                         // Robustly find the audio URL
-                        // Prioritize audio_url as per user's latest log
-                        const audioUrl = c.audio_url || c.conversion_path || c.url || c.result_url || c.file_url || c.s3_path;
+                        // Based on logs, the key is 'conversion_path_1' (or _2) in the completion object
+                        const audioUrl = c.conversion_path_1 || c.conversion_path || c.audio_url || c.url || c.result_url || c.file_url || c.s3_path;
                         
                         if (audioUrl) {
                             storedData.songs[songIndex].status = "Ready";
                             storedData.songs[songIndex].audioUrl = audioUrl;
                             
                             // Robustly find the cover image
-                            storedData.songs[songIndex].coverImage = c.album_cover_url || c.cover_image || c.cover_url || c.image_url;
+                            // Based on logs, key is 'album_cover_path'
+                            storedData.songs[songIndex].coverImage = c.album_cover_path || c.album_cover_url || c.cover_image || c.cover_url || c.image_url;
                             if (!storedData.songs[songIndex].coverImage) {
                                  storedData.songs[songIndex].coverImage = "assets/img/hero-bg.jpg"; // Placeholder
                             }
