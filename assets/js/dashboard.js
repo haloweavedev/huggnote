@@ -543,4 +543,62 @@ document.head.appendChild(style);
 window.copyPrompt = copyPrompt;
 window.openPlayer = openPlayer;
 
+function renderOrdersList(orders) {
+  const tbody = document.getElementById("orders-table-body");
+  if (!tbody) return;
+
+  if (orders.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="6" class="text-center muted">No orders found.</td></tr>`;
+    return;
+  }
+
+  tbody.innerHTML = orders.map(order => `
+    <tr>
+      <td>${order.id}</td>
+      <td>${order.date}</td>
+      <td>${order.package}</td>
+      <td>${order.amount}</td>
+      <td><span class="status-chip status-paid">${order.status}</span></td>
+      <td><button class="btn-text">Download</button></td>
+    </tr>
+  `).join("");
+}
+
+function setupLogout() {
+  const btn = document.getElementById("logout-btn");
+  if (btn) {
+    btn.addEventListener("click", () => {
+      localStorage.removeItem("huggnoteUser");
+      window.location.href = "index.html";
+    });
+  }
+}
+
+function setupReset() {
+  const resetBtn = document.getElementById("reset-data-btn");
+  if (resetBtn) {
+    resetBtn.addEventListener("click", () => {
+       localStorage.removeItem('huggnoteUser');
+       localStorage.removeItem('huggnoteData');
+       alert('Local data (huggnoteUser, huggnoteData) has been reset!');
+       window.location.reload(); 
+    });
+  }
+}
+
+// Utils
+function getRandomColor() {
+  const colors = [
+    "linear-gradient(135deg, #a855f7, #ec4899)",
+    "linear-gradient(135deg, #3b82f6, #06b6d4)",
+    "linear-gradient(135deg, #f97316, #f59e0b)",
+    "linear-gradient(135deg, #10b981, #14b8a6)"
+  ];
+  return colors[Math.floor(Math.random() * colors.length)];
+}
+
+// Global helpers for HTML inline calls
+window.navigateTo = navigateTo;
+window.mockPurchase = mockPurchase;
+
 
