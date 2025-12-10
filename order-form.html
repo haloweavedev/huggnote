@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Order Form — Huggnote2 Custom Holiday Songs</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="assets/css/styles.css" />
+    <script defer src="assets/js/main.js"></script>
+  </head>
+  <body>
+    <header class="nav">
+      <div class="container nav-inner">
+        <a class="logo" href="index.html"><span class="logo-badge">H</span>Huggnote2</a>
+        <nav class="nav-links">
+          <a href="index.html#pricing" class="btn btn-secondary">Back to pricing</a>
+        </nav>
+      </div>
+    </header>
+
+    <main class="section">
+      <div class="container">
+        
+        <div class="text-center section-header" style="margin: 0 auto 40px auto;">
+          <div class="section-label">Order Form</div>
+          <h2 class="section-title">Tell us about your loved one</h2>
+          <p class="section-subtitle" style="margin: 0 auto;">We'll use these details to craft 3 unique holiday song versions.</p>
+        </div>
+
+        <div class="plan-strip" data-plan-strip>
+          <div>
+            <p class="muted" style="margin:0; font-size:13px; text-transform:uppercase; letter-spacing:0.05em;">Selected Package</p>
+            <strong data-plan-name style="font-size:18px;">Single Song</strong>
+          </div>
+          <div style="flex:1; margin-left:24px;">
+             <p class="muted" style="margin:0; font-size:13px; text-transform:uppercase; letter-spacing:0.05em;">Price</p>
+             <strong data-plan-price style="font-size:18px;">$79</strong>
+          </div>
+          <div class="inline-actions" style="margin:0;">
+            <a class="btn btn-secondary" href="index.html#pricing">Change</a>
+          </div>
+        </div>
+
+        <div id="form" class="card form-card">
+          <form data-flow="order">
+            
+            <div class="subtle-section">
+              <h3 style="margin-bottom:24px;">1. The Basics</h3>
+              <div class="form-grid">
+                <div class="input-group">
+                  <label for="your-name">Your name</label>
+                  <input id="your-name" name="yourName" placeholder="e.g. Alex Smith" data-required />
+                  <p class="error"></p>
+                </div>
+                <div class="input-group">
+                  <label for="recipient-name">Recipient's name</label>
+                  <input id="recipient-name" name="recipientName" placeholder="e.g. Sarah" data-required />
+                  <p class="error"></p>
+                </div>
+                <div class="input-group">
+                  <label for="contact-email">Your email (for previews)</label>
+                  <input id="contact-email" name="email" type="email" placeholder="alex@example.com" data-required />
+                  <p class="error"></p>
+                </div>
+              </div>
+            </div>
+
+            <div class="subtle-section">
+              <h3 style="margin-bottom:24px;">2. Song 1 Details</h3>
+              <div class="form-grid">
+                <div class="input-group">
+                  <label for="who">Who is this song for? (Nickname/Title)</label>
+                  <input id="who" name="who" placeholder="e.g. Mum, Honey, Big Bro" data-required />
+                  <p class="error"></p>
+                </div>
+                <div class="input-group">
+                  <label for="relationship">Relationship</label>
+                  <select id="relationship" name="relationship" data-required>
+                    <option value="">Select...</option>
+                    <option>Family - Mum / Dad</option>
+                    <option>Family - Sibling</option>
+                    <option>Family - Child</option>
+                    <option>Family - Relative</option>
+                    <option>Friend - Best Friend</option>
+                    <option>Friend - Colleague</option>
+                    <option>Romantic - Partner</option>
+                    <option>Romantic - Dating</option>
+                    <option>Other</option>
+                  </select>
+                  <p class="error"></p>
+                </div>
+                
+                <div class="input-group" style="grid-column: 1 / -1;">
+                  <label>Emotional Tone</label>
+                  <div class="pill-select" data-bind="feelings">
+                    <button type="button" class="pill-option" data-value="Warm & caring">Warm & caring</button>
+                    <button type="button" class="pill-option" data-value="Romantic & loving">Romantic & loving</button>
+                    <button type="button" class="pill-option" data-value="Fun & playful">Fun & playful</button>
+                    <button type="button" class="pill-option" data-value="Sentimental">Sentimental</button>
+                  </div>
+                  <input type="hidden" id="feelings" name="feelings" />
+                </div>
+
+                <div class="input-group">
+                  <label for="vibe">Musical Vibe</label>
+                  <select id="vibe" name="vibe">
+                    <option>Heartfelt & emotional</option>
+                    <option>Fun & upbeat</option>
+                    <option>Cozy & acoustic</option>
+                    <option>Cinematic & grand</option>
+                    <option>Surprise me</option>
+                  </select>
+                </div>
+                <div class="input-group">
+                  <label for="style">Holiday Style</label>
+                  <select id="style" name="style">
+                    <option>Classic Christmas (Bells & Choirs)</option>
+                    <option>Winter Wonderland (Soft & Snowy)</option>
+                    <option>Modern Pop Holiday</option>
+                    <option>Jazz / Lounge Christmas</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            <div class="subtle-section">
+              <h3 style="margin-bottom:24px;">3. The Story</h3>
+              <div class="input-group">
+                <label for="story">What makes this person/moment special?</label>
+                <textarea id="story" name="story" placeholder="Tell us a specific memory, an inside joke, or why you appreciate them. The more details, the better the lyrics!" data-required style="min-height:160px;"></textarea>
+                <p class="helper">Tip: Mention specific places, dates, or funny habits.</p>
+                <p class="error"></p>
+              </div>
+              <div class="input-group">
+                <label for="keywords">Key words or phrases to include</label>
+                <input id="keywords" name="keywords" placeholder="e.g. 'Amsterdam trip', 'burnt toast', 'always there'" />
+              </div>
+            </div>
+
+            <div class="subtle-section">
+              <h3 style="margin-bottom:24px;">4. Fine Tuning</h3>
+              <div class="form-grid">
+                <div class="input-group">
+                  <label>Personalisation Level</label>
+                  <div class="pill-select" data-bind="personalisation">
+                    <button type="button" class="pill-option" data-value="High (Many details)">High</button>
+                    <button type="button" class="pill-option" data-value="Medium (Balanced)">Medium</button>
+                    <button type="button" class="pill-option" data-value="Low (General)">Low</button>
+                  </div>
+                  <input type="hidden" id="personalisation" name="personalisation" />
+                </div>
+                <div class="input-group">
+                  <label for="include-name">Mention their name in lyrics?</label>
+                  <select id="include-name" name="includeName">
+                    <option>Yes, include it</option>
+                    <option>No, keep it general</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            <!-- Multi Song Section (Initially Hidden or shown based on JS logic, but structure here is key) -->
+            <div class="song-accordion" data-song-list>
+              <!-- JS will inject additional songs here if needed, styled with .song-card -->
+            </div>
+            
+            <div style="margin-top:24px; margin-bottom: 40px;">
+                <button type="button" class="btn btn-secondary" data-add-song style="width:100%;">
+                  + Add Another Song (Multi-Pack Only)
+                </button>
+            </div>
+
+            <div class="subtle-section">
+              <h3 style="margin-bottom:24px;">5. Delivery</h3>
+              <div class="form-grid">
+                <div class="input-group">
+                  <label for="delivery">How should we send it?</label>
+                  <select id="delivery" name="delivery">
+                    <option>Email only</option>
+                    <option>Email + WhatsApp link</option>
+                  </select>
+                </div>
+                <div class="input-group">
+                  <label for="date">Target Delivery Date (Optional)</label>
+                  <input id="date" name="date" type="date" />
+                </div>
+              </div>
+              
+              <div class="checkbox" style="margin-top:24px;">
+                <input type="checkbox" id="consent" data-required />
+                <label for="consent" style="font-weight:400; color:var(--color-text-secondary);">I confirm these details are correct and I am ordering a custom song for personal use.</label>
+              </div>
+              <p class="error"></p>
+            </div>
+
+            <div class="text-center">
+              <button class="btn btn-primary btn-mindblowing" type="submit" style="width:100%; max-width:400px; padding: 18px; font-size:18px;">
+                <span class="btn-text-content">Create My Custom Song</span>
+              </button>
+              <p data-confirmation class="helper" style="margin-top:16px;"></p>
+            </div>
+
+          </form>
+        </div>
+      </div>
+    </main>
+  </body>
+</html>

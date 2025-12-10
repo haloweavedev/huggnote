@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Success — Huggnote2</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="assets/css/styles.css" />
+    <script defer src="assets/js/main.js"></script>
+  </head>
+  <body>
+    <header class="nav">
+      <div class="container nav-inner">
+        <a class="logo" href="index.html"><span class="logo-badge">H</span>Huggnote2</a>
+        <div class="nav-links">
+          <span class="pill">Step 4 of 4 · Complete</span>
+          <a class="btn btn-secondary" href="checkout.html">Back</a>
+        </div>
+      </div>
+    </header>
+
+    <main class="section">
+      <div class="container">
+        <div class="success-hero">
+          <div class="icon">✓</div>
+          <h1>Your custom holiday song is ready to share</h1>
+          <p class="section-subtitle">We’ve emailed your shareable gift link. You can also copy it below.</p>
+          <div class="hero-cta" style="justify-content: center">
+            <a class="btn btn-primary" href="player.html">Preview recipient experience</a>
+            <a class="btn btn-secondary" href="admin-dashboard.html">Go to admin dashboard</a>
+          </div>
+        </div>
+
+        <div class="grid grid-2">
+          <div class="card">
+            <p class="pill">Summary</p>
+            <h3>To: Sarah · From: Alex</h3>
+            <p class="muted">Plan: <span data-summary-plan>Single Song — $79</span></p>
+            <p class="muted">Selected version: <span data-summary-version>Song 1 · Version 1</span></p>
+            <p class="muted">Delivery: Email + WhatsApp</p>
+          </div>
+
+          <div class="card">
+            <p class="pill">Shareable link</p>
+            <div class="copy-box">
+              <input id="gift-link" value="https://huggnote2.gift/player/abc123" readonly />
+              <button class="btn btn-primary" type="button" data-copy="#gift-link">Copy link</button>
+            </div>
+            <p class="section-subtitle">Share via text, email, or WhatsApp. The link opens the snowy gift scene.</p>
+          </div>
+        </div>
+      </div>
+    </main>
+  </body>
+</html>

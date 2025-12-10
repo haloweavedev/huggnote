@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MusicGPT Experiment — Huggnote2</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="assets/css/styles.css" />
+    <!-- Inline styles for experiment specific layout tweaks -->
+    <style>
+      .experiment-hero {
+        background: radial-gradient(circle at 50% 50%, #f0fdf4 0%, #ffffff 60%);
+        padding: 60px 0;
+        text-align: center;
+      }
+      .console-output {
+        background: #1e293b;
+        color: #f1f5f9;
+        font-family: 'Menlo', 'Monaco', 'Courier New', monospace;
+        padding: 24px;
+        border-radius: 16px;
+        font-size: 14px;
+        line-height: 1.6;
+        min-height: 200px;
+        max-height: 400px;
+        overflow-y: auto;
+        margin-top: 24px;
+        text-align: left;
+      }
+      .console-line {
+        margin-bottom: 8px;
+        border-bottom: 1px solid rgba(255,255,255,0.1);
+        padding-bottom: 4px;
+      }
+      .console-line.success { color: #4ade80; }
+      .console-line.error { color: #f87171; }
+      .console-line.info { color: #60a5fa; }
+      
+      .loading-spinner {
+        display: inline-block;
+        width: 12px;
+        height: 12px;
+        border: 2px solid #fff;
+        border-radius: 50%;
+        border-top-color: transparent;
+        animation: spin 1s linear infinite;
+        margin-left: 8px;
+      }
+      @keyframes spin { to { transform: rotate(360deg); } }
+    </style>
+  </head>
+  <body>
+    <header class="nav">
+      <div class="container nav-inner">
+        <a class="logo" href="index.html"><span class="logo-badge">H</span>Huggnote2</a>
+        <nav class="nav-links">
+          <a href="index.html" class="btn btn-secondary">Back to Home</a>
+        </nav>
+      </div>
+    </header>
+
+    <main>
+      <section class="experiment-hero">
+        <div class="container">
+          <div class="section-label" style="background: #dcfce7; color: #16a34a; border-color: #bbf7d0;">Labs</div>
+          <h1 style="margin-top: 16px;">MusicGPT Experiment</h1>
+          <p class="section-subtitle" style="margin: 0 auto;">Generate AI music directly from your browser using our local proxy server.</p>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="container two-column">
+          <!-- Control Panel -->
+          <div class="card form-card" style="margin: 0; padding: 32px;">
+            <h3 style="margin-bottom: 24px;">Generation Settings</h3>
+            <form id="musicForm">
+              <div class="input-group">
+                <label for="prompt">Prompt</label>
+                <textarea id="prompt" name="prompt" maxlength="300" placeholder="Describe the song (max 300 chars)" required style="min-height: 100px;" oninput="document.getElementById('charCount').textContent = this.value.length + '/300'"></textarea>
+                <div style="text-align: right; font-size: 12px; color: #94a3b8; margin-top: 4px;" id="charCount">0/300</div>
+              </div>
+
+              <div class="form-grid">
+                <div class="input-group">
+                  <label for="music_style">Style</label>
+                  <select id="music_style" name="music_style">
+                    <option value="Pop">Pop</option>
+                    <option value="Rock">Rock</option>
+                    <option value="Lo-fi">Lo-fi</option>
+                    <option value="Hip Hop">Hip Hop</option>
+                    <option value="Jazz">Jazz</option>
+                    <option value="Classical">Classical</option>
+                    <option value="Electronic">Electronic</option>
+                    <option value="Country">Country</option>
+                  </select>
+                </div>
+                <div class="input-group">
+                  <label for="duration">Duration (Seconds)</label>
+                  <input type="number" value="30" disabled placeholder="Fixed by API" style="background: #f1f5f9;" />
+                </div>
+              </div>
+
+              <div class="subtle-section" style="padding: 20px;">
+                <div class="checkbox">
+                  <input type="checkbox" id="make_instrumental" name="make_instrumental">
+                  <label for="make_instrumental">Instrumental Only</label>
+                </div>
+              </div>
+
+              <button type="submit" class="btn btn-primary btn-mindblowing" style="width: 100%; justify-content: center;">
+                <span class="btn-text-content">Generate Music</span>
+              </button>
+            </form>
+          </div>
+
+          <!-- Output Panel -->
+          <div>
+            <div class="card" style="height: 100%; display: flex; flex-direction: column;">
+              <h3>Live Output</h3>
+              <p class="muted">Real-time status logs from the generation task.</p>
+              
+              <div id="console" class="console-output">
+                <div class="console-line">Ready to generate...</div>
+              </div>
+
+              <div id="resultsArea" style="margin-top: 24px; display: none;">
+                <h4>Generated Tracks</h4>
+                <div class="audio-grid" style="grid-template-columns: 1fr; gap: 16px; margin-top: 16px;">
+                  <article class="audio-card" id="track1" style="display:none;">
+                    <p class="pill">Version 1</p>
+                    <audio controls style="width: 100%; margin-top: 8px;"></audio>
+                    <a href="#" class="btn btn-secondary" style="margin-top: 8px; width: 100%; justify-content: center;" download>Download</a>
+                  </article>
+                  <article class="audio-card" id="track2" style="display:none;">
+                    <p class="pill">Version 2</p>
+                    <audio controls style="width: 100%; margin-top: 8px;"></audio>
+                    <a href="#" class="btn btn-secondary" style="margin-top: 8px; width: 100%; justify-content: center;" download>Download</a>
+                  </article>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+    
+    <script src="assets/js/experiment.js"></script>
+  </body>
+</html>

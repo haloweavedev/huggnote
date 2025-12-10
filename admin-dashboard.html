@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin Dashboard — Huggnote2</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="assets/css/styles.css" />
+    <script defer src="assets/js/main.js"></script>
+  </head>
+  <body>
+    <header class="nav">
+      <div class="container nav-inner">
+        <a class="logo" href="index.html"><span class="logo-badge">H</span>Huggnote2</a>
+        <div class="nav-links">
+          <a class="btn btn-secondary" href="success.html">Back to success</a>
+        </div>
+      </div>
+    </header>
+
+    <main class="section">
+      <div class="container">
+        <div class="section-header">
+          <div>
+            <div class="section-label">Orders</div>
+            <h2 class="section-title">Production pipeline</h2>
+            <p class="section-subtitle">Track every order from intake to delivery.</p>
+          </div>
+          <a class="btn btn-primary" href="order-form.html">Create new order</a>
+        </div>
+
+        <div class="card">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Order ID</th>
+                <th>Plan</th>
+                <th>Customer</th>
+                <th>Status</th>
+                <th>Last updated</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr data-order-row data-id="#1024" data-customer="Alex Parker" data-plan="Multi Pack" data-status="Previews ready" data-note="3 songs awaiting selection">
+                <td>#1024</td>
+                <td>Multi Pack</td>
+                <td>Alex Parker</td>
+                <td><span class="status-chip status-ready">Previews ready</span></td>
+                <td>Dec 10, 2025 · 9:12 AM</td>
+              </tr>
+              <tr data-order-row data-id="#1023" data-customer="Maya Lee" data-plan="Single Song" data-status="Paid" data-note="Awaiting delivery scheduling">
+                <td>#1023</td>
+                <td>Single Song</td>
+                <td>Maya Lee</td>
+                <td><span class="status-chip status-paid">Paid</span></td>
+                <td>Dec 10, 2025 · 8:20 AM</td>
+              </tr>
+              <tr data-order-row data-id="#1022" data-customer="Jordan Miles" data-plan="Multi Pack" data-status="In production" data-note="Song 2 lyrics in review">
+                <td>#1022</td>
+                <td>Multi Pack</td>
+                <td>Jordan Miles</td>
+                <td><span class="status-chip status-pending">In production</span></td>
+                <td>Dec 9, 2025 · 5:42 PM</td>
+              </tr>
+              <tr data-order-row data-id="#1021" data-customer="Priya Kapoor" data-plan="Single Song" data-status="Delivered" data-note="Gift link opened 4 times">
+                <td>#1021</td>
+                <td>Single Song</td>
+                <td>Priya Kapoor</td>
+                <td><span class="status-chip status-ready">Delivered</span></td>
+                <td>Dec 9, 2025 · 2:17 PM</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="detail-drawer" data-drawer style="display: none">
+          <p class="pill">Order detail</p>
+          <h3 data-drawer-id>#1024</h3>
+          <p class="muted" data-drawer-customer>Alex Parker · Multi Pack</p>
+          <p data-drawer-status>Previews ready</p>
+          <p class="muted" data-drawer-note>3 songs awaiting selection</p>
+          <div class="inline-actions">
+            <a class="btn btn-primary" href="preview.html">Open previews</a>
+            <a class="btn btn-secondary" href="checkout.html">Force checkout</a>
+          </div>
+        </div>
+      </div>
+    </main>
+  </body>
+</html>

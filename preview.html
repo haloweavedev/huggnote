@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Song Previews — Huggnote2</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="assets/css/styles.css" />
+    <script defer src="assets/js/main.js"></script>
+  </head>
+  <body>
+    <header class="nav">
+      <div class="container nav-inner">
+        <a class="logo" href="index.html"><span class="logo-badge">H</span>Huggnote2</a>
+        <div class="nav-links">
+          <span class="pill">Step 2 of 4 · Preview</span>
+          <a class="btn btn-secondary" href="order-form.html">Back to form</a>
+        </div>
+      </div>
+    </header>
+
+    <main class="section">
+      <div class="container">
+        <div class="card">
+          <div class="section-label">Your custom song previews are ready</div>
+          <h2 class="section-title">Listen to each version and choose your favorite</h2>
+          <p class="section-subtitle">We crafted multiple moods so you can pick the perfect gift.</p>
+
+          <div class="tabs">
+            <button class="tab active" data-target="song1">Song 1</button>
+            <button class="tab" data-target="song2">Song 2</button>
+            <button class="tab" data-target="song3">Song 3</button>
+          </div>
+
+          <div class="audio-grid" data-tab-panel="song1">
+            <article class="audio-card">
+              <p class="pill">Version 1 · Warm & cosy</p>
+              <p class="muted">Soft bells, intimate vocals, gentle tempo for heartfelt moments.</p>
+              <audio controls src="assets/img/preview-sample.wav"></audio>
+              <button class="btn btn-primary" data-version="1" data-song="Song 1" data-note="Warm">Select this version</button>
+            </article>
+            <article class="audio-card">
+              <p class="pill">Version 2 · Festive & bright</p>
+              <p class="muted">Upbeat pop holiday with shimmering strings and a big chorus.</p>
+              <audio controls src="assets/img/preview-sample.wav"></audio>
+              <button class="btn btn-primary" data-version="2" data-song="Song 1" data-note="Festive">Select this version</button>
+            </article>
+            <article class="audio-card">
+              <p class="pill">Version 3 · Acoustic & intimate</p>
+              <p class="muted">Guitar-led, storyteller tone with close vocals and soft pads.</p>
+              <audio controls src="assets/img/preview-sample.wav"></audio>
+              <button class="btn btn-primary" data-version="3" data-song="Song 1" data-note="Acoustic">Select this version</button>
+            </article>
+          </div>
+
+          <div class="audio-grid" data-tab-panel="song2" style="display: none">
+            <article class="audio-card">
+              <p class="pill">Version 1 · Romantic & glowing</p>
+              <p class="muted">Delicate piano intro, swelling strings, and cozy harmonies.</p>
+              <audio controls src="assets/img/preview-sample.wav"></audio>
+              <button class="btn btn-primary" data-version="1" data-song="Song 2" data-note="Romantic">Select this version</button>
+            </article>
+            <article class="audio-card">
+              <p class="pill">Version 2 · Joyful sparkle</p>
+              <p class="muted">Jingle bells, modern beats, and a playful hook.</p>
+              <audio controls src="assets/img/preview-sample.wav"></audio>
+              <button class="btn btn-primary" data-version="2" data-song="Song 2" data-note="Joyful">Select this version</button>
+            </article>
+            <article class="audio-card">
+              <p class="pill">Version 3 · Cinematic snow</p>
+              <p class="muted">Lush strings and cinematic drums for a grand holiday moment.</p>
+              <audio controls src="assets/img/preview-sample.wav"></audio>
+              <button class="btn btn-primary" data-version="3" data-song="Song 2" data-note="Cinematic">Select this version</button>
+            </article>
+          </div>
+
+          <div class="audio-grid" data-tab-panel="song3" style="display: none">
+            <article class="audio-card">
+              <p class="pill">Version 1 · Heartfelt duet</p>
+              <p class="muted">Two voices weaving your story with gentle strings.</p>
+              <audio controls src="assets/img/preview-sample.wav"></audio>
+              <button class="btn btn-primary" data-version="1" data-song="Song 3" data-note="Duet">Select this version</button>
+            </article>
+            <article class="audio-card">
+              <p class="pill">Version 2 · Snowy night</p>
+              <p class="muted">Slow, starry ambience with subtle sleigh bells and warmth.</p>
+              <audio controls src="assets/img/preview-sample.wav"></audio>
+              <button class="btn btn-primary" data-version="2" data-song="Song 3" data-note="Snowy">Select this version</button>
+            </article>
+            <article class="audio-card">
+              <p class="pill">Version 3 · Upbeat cheer</p>
+              <p class="muted">Fun, joyful chorus to make them smile instantly.</p>
+              <audio controls src="assets/img/preview-sample.wav"></audio>
+              <button class="btn btn-primary" data-version="3" data-song="Song 3" data-note="Cheer">Select this version</button>
+            </article>
+          </div>
+        </div>
+      </div>
+    </main>
+  </body>
+</html>

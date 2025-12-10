@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Checkout — Huggnote2</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="assets/css/styles.css" />
+    <script defer src="assets/js/main.js"></script>
+  </head>
+  <body>
+    <header class="nav">
+      <div class="container nav-inner">
+        <a class="logo" href="index.html"><span class="logo-badge">H</span>Huggnote2</a>
+        <div class="nav-links">
+          <span class="pill">Step 3 of 4 · Checkout</span>
+          <a class="btn btn-secondary" href="preview.html">Back to previews</a>
+        </div>
+      </div>
+    </header>
+
+    <main class="section">
+      <div class="container two-column">
+        <div class="card">
+          <div class="section-label">Secure Payment</div>
+          <h2 class="section-title">Complete your order</h2>
+          <p class="section-subtitle">Your payment is encrypted and processed securely.</p>
+          <form data-flow="checkout">
+            <div class="input-group">
+              <label for="card-name">Name on card</label>
+              <input id="card-name" placeholder="Full name" data-required />
+              <p class="error"></p>
+            </div>
+            <div class="input-group">
+              <label for="card-number">Card number</label>
+              <input id="card-number" inputmode="numeric" placeholder="4242 4242 4242 4242" data-required />
+              <p class="error"></p>
+            </div>
+            <div class="form-grid">
+              <div class="input-group">
+                <label for="expiry">Expiry</label>
+                <input id="expiry" placeholder="MM/YY" data-required />
+                <p class="error"></p>
+              </div>
+              <div class="input-group">
+                <label for="cvc">CVC</label>
+                <input id="cvc" placeholder="123" data-required />
+                <p class="error"></p>
+              </div>
+            </div>
+            <div class="input-group">
+              <label for="billing-email">Receipt email</label>
+              <input id="billing-email" type="email" placeholder="you@example.com" data-required />
+              <p class="error"></p>
+            </div>
+            <button class="btn btn-primary" data-pay>Pay now</button>
+          </form>
+        </div>
+
+        <aside class="order-summary">
+          <div class="card">
+            <p class="pill">Order summary</p>
+            <h3 data-summary-plan>Single Song — $79</h3>
+            <p class="muted">Selected version</p>
+            <p data-summary-version>Song 1 · Version 1</p>
+            <hr style="border: none; border-bottom: 1px solid var(--color-border); margin: var(--space-4) 0" />
+            <p class="muted">Delivery email</p>
+            <p>We’ll send your shareable gift link as soon as payment is confirmed.</p>
+            <div class="plan-strip" style="margin-top: 12px">
+              <div>
+                <p class="muted">Total</p>
+                <strong data-summary-price>$79</strong>
+              </div>
+              <span class="status-chip status-ready">Secure</span>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </main>
+  </body>
+</html>
