@@ -11,7 +11,129 @@ document.addEventListener("DOMContentLoaded", () => {
   setupVersionSelection();
   hydrateOrderSummary();
   setupAdminDrawer();
+  setupHeroPlayer();
+  setupLoginModal();
 });
+
+function setupLoginModal() {
+  const modal = document.getElementById("login-modal");
+  const trigger = document.querySelector("[data-login-trigger]");
+  const closeBtn = document.getElementById("close-login-modal");
+  const form = document.getElementById("login-form");
+  const googleBtn = document.getElementById("google-login");
+
+  if (!modal || !trigger) return;
+
+  trigger.addEventListener("click", (e) => {
+    e.preventDefault();
+    modal.style.display = "flex";
+  });
+
+  const closeModal = () => {
+    modal.style.display = "none";
+  };
+
+  closeBtn.addEventListener("click", closeModal);
+  modal.addEventListener("click", (e) => {
+    if (e.target === modal) closeModal();
+  });
+
+  const handleLogin = (email) => {
+    const user = { email: email || "user@example.com" };
+    localStorage.setItem("huggnoteUser", JSON.stringify(user));
+    window.location.href = "dashboard.html";
+  };
+
+  form.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const email = document.getElementById("login-email").value;
+    handleLogin(email);
+  });
+
+  googleBtn.addEventListener("click", () => {
+    handleLogin("user@gmail.com");
+  });
+}
+
+function setupHeroPlayer() {
+  const audio = document.getElementById("hero-audio");
+  const playBtn = document.getElementById("hero-play-btn");
+  const slider = document.getElementById("slider");
+  const thumb = document.getElementById("thumb");
+
+  if (!audio || !playBtn || !slider) return;
+
+  // Play/Pause
+  playBtn.addEventListener("click", () => {
+    if (audio.paused) {
+      audio.play().catch(() => {});
+      playBtn.querySelector("span").textContent = "pause";
+    } else {
+      audio.pause();
+      playBtn.querySelector("span").textContent = "play_arrow";
+    }
+  });
+
+  // Audio Events
+  audio.addEventListener("timeupdate", () => {
+    if (isDragging) return;
+    const progress = audio.currentTime / audio.duration || 0;
+    slider.style.setProperty("--value", progress);
+    slider.dataset.value = progress * 100;
+  });
+
+  audio.addEventListener("ended", () => {
+    playBtn.querySelector("span").textContent = "play_arrow";
+    slider.style.setProperty("--value", 0);
+  });
+
+  // Slider Interaction
+  let isDragging = false;
+
+  const getSliderValue = () => {
+    return parseFloat(slider.dataset.value || "0");
+  };
+
+  const onChange = (e) => {
+    if (e) e.preventDefault();
+    let value = getSliderValue() / 100;
+    
+    if (e) {
+      const rect = slider.getBoundingClientRect();
+      const clientX = e.clientX || (e.touches ? e.touches[0].clientX : 0);
+      value = (clientX - rect.left) / rect.width;
+      value = Math.max(0, Math.min(1, value));
+    }
+    
+    slider.style.setProperty("--value", value);
+    slider.dataset.value = value * 100;
+    
+    if (isDragging && isFinite(audio.duration)) {
+      audio.currentTime = value * audio.duration;
+    }
+  };
+
+  const onStart = (e) => {
+    isDragging = true;
+    window.addEventListener("mousemove", onChange);
+    window.addEventListener("touchmove", onChange);
+    window.addEventListener("mouseup", onEnd);
+    window.addEventListener("touchend", onEnd);
+    onChange(e);
+  };
+
+  const onEnd = () => {
+    isDragging = false;
+    window.removeEventListener("mousemove", onChange);
+    window.removeEventListener("touchmove", onChange);
+    window.removeEventListener("mouseup", onEnd);
+    window.removeEventListener("touchend", onEnd);
+  };
+
+  slider.addEventListener("mousedown", onStart);
+  slider.addEventListener("touchstart", onStart, { passive: false });
+}
+
 
 function setupSmoothScroll() {
   document.querySelectorAll('a[href^="#"]').forEach((link) => {
@@ -71,35 +193,106 @@ function setupFormValidation() {
     form.addEventListener("submit", (e) => {
       const requiredFields = form.querySelectorAll("[data-required]");
       let valid = true;
+      let firstErrorField = null;
+
       requiredFields.forEach((field) => {
         const message =
           field.closest(".input-group")?.querySelector(".error") ||
           field.parentElement.querySelector(".error") ||
           field.closest("section")?.querySelector(".error");
+        
         if (message) message.textContent = "";
+        
         const isCheckbox = field.type === "checkbox";
         const empty = isCheckbox ? !field.checked : !field.value.trim();
+        
         if (empty) {
           valid = false;
           if (message) message.textContent = "This field is required.";
+          if (!firstErrorField) firstErrorField = field;
         }
       });
 
       if (!valid) {
         e.preventDefault();
-        form.scrollIntoView({ behavior: "smooth" });
+        if (firstErrorField) {
+            firstErrorField.scrollIntoView({ behavior: "smooth", block: "center" });
+            firstErrorField.focus({ preventScroll: true });
+        } else {
+            form.scrollIntoView({ behavior: "smooth" });
+        }
         return;
       }
 
       const flow = form.dataset.flow;
       if (flow === "order") {
         e.preventDefault();
-        const confirmation = document.querySelector("[data-confirmation]");
-        if (confirmation) {
-          confirmation.textContent = "Order received – we'll send your previews within 2–3 business days.";
-          confirmation.classList.add("success");
-        }
-        setTimeout(() => (window.location.href = "preview.html"), 800);
+        const btn = form.querySelector('button[type="submit"]');
+        const originalBtnText = btn.innerHTML;
+        btn.innerHTML = '<span class="btn-text-content">Generating Prompt...</span>';
+        btn.disabled = true;
+
+        const formData = {
+            recipientName: form.querySelector('[name="recipientName"]')?.value,
+            relationship: form.querySelector('[name="relationship"]')?.value,
+            who: form.querySelector('[name="who"]')?.value,
+            feelings: form.querySelector('[name="feelings"]')?.value,
+            vibe: form.querySelector('[name="vibe"]')?.value,
+            style: form.querySelector('[name="style"]')?.value,
+            story: form.querySelector('[name="story"]')?.value,
+            keywords: form.querySelector('[name="keywords"]')?.value,
+            personalisation: form.querySelector('[name="personalisation"]')?.value,
+            includeName: form.querySelector('[name="includeName"]')?.value
+        };
+
+        const generatePrompt = async () => {
+            try {
+                const response = await fetch('/api/create-prompt', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(formData)
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    const modal = document.getElementById('prompt-modal');
+                    const promptArea = document.getElementById('generated-prompt');
+                    promptArea.value = data.prompt;
+                    modal.style.display = 'flex';
+                    
+                    // Setup Modal Buttons (only once)
+                    if (!modal.dataset.initialized) {
+                         const closeBtn = document.getElementById('close-modal');
+                         const regenBtn = document.getElementById('resubmit-prompt');
+                         
+                         closeBtn.addEventListener('click', () => {
+                             modal.style.display = 'none';
+                         });
+                         
+                         regenBtn.addEventListener('click', async () => {
+                             regenBtn.textContent = "Regenerating...";
+                             regenBtn.disabled = true;
+                             await generatePrompt();
+                             regenBtn.textContent = "Regenerate";
+                             regenBtn.disabled = false;
+                         });
+                         modal.dataset.initialized = "true";
+                    }
+                } else {
+                    alert('Error generating prompt: ' + data.message);
+                }
+            } catch (err) {
+                console.error(err);
+                alert('Failed to contact server.');
+            } finally {
+                btn.innerHTML = originalBtnText;
+                btn.disabled = false;
+            }
+        };
+
+        generatePrompt();
+
       } else if (flow === "checkout") {
         e.preventDefault();
         const payBtn = form.querySelector("[data-pay]");

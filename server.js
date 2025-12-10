@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
+const { Groq } = require('groq-sdk');
 require('dotenv').config();
 
 const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch(...args));
@@ -13,14 +14,66 @@ app.use(bodyParser.json());
 app.use(express.static('.'));
 
 const API_KEY = process.env.MUSICGPT_API_KEY;
+const GROQ_API_KEY = process.env.GROQ_API_KEY;
 
 if (!API_KEY || API_KEY === 'your_api_key_here' || API_KEY.trim() === '') {
     console.error("CRITICAL ERROR: MUSICGPT_API_KEY is not set or is invalid in your .env file.");
-    console.error("Please edit the .env file and set MUSICGPT_API_KEY=your_actual_musicgpt_api_key");
-    process.exit(1); // Exit if API key is not configured
 } else {
     console.log("MusicGPT API Key loaded successfully.");
 }
+
+let groq;
+if (GROQ_API_KEY) {
+    groq = new Groq({ apiKey: GROQ_API_KEY });
+    console.log("Groq API Key loaded successfully.");
+} else {
+    console.warn("WARNING: GROQ_API_KEY is not set in .env. Prompt generation features will fail.");
+}
+
+// Endpoint to generate prompt using Groq
+app.post('/api/create-prompt', async (req, res) => {
+    if (!groq) {
+        return res.status(500).json({ success: false, message: "Groq API is not configured on the server." });
+    }
+
+    try {
+        const formData = req.body;
+        const systemPrompt = `You are an expert song prompt engineer. 
+        Create a concise, descriptive prompt (max 300 characters) for an AI music generator based on the user's order details.
+        Focus on style, mood, instrumentation, and key lyrical themes.
+        
+        Input Data:
+        - Recipient: ${formData.recipientName} (${formData.relationship})
+        - Occasion/Context: ${formData.who}
+        - Emotion: ${formData.feelings}
+        - Vibe: ${formData.vibe}
+        - Holiday Style: ${formData.style}
+        - Story/Memories: ${formData.story}
+        - Keywords: ${formData.keywords}
+        - Personalisation Level: ${formData.personalisation}
+        - Include Name: ${formData.includeName}
+        
+        Output only the prompt string. No explanations.`;
+
+        const chatCompletion = await groq.chat.completions.create({
+            messages: [{ role: "user", content: systemPrompt }],
+            model: "llama-3.3-70b-versatile", // Using a versatile model available on Groq
+            temperature: 0.7,
+            max_tokens: 150,
+        });
+
+        const generatedPrompt = chatCompletion.choices[0]?.message?.content || "";
+        
+        // Truncate to ensure 300 char limit if AI overshot slightly
+        const finalPrompt = generatedPrompt.length > 300 ? generatedPrompt.substring(0, 297) + "..." : generatedPrompt;
+
+        res.json({ success: true, prompt: finalPrompt });
+
+    } catch (error) {
+        console.error("Error generating prompt with Groq:", error);
+        res.status(500).json({ success: false, message: "Failed to generate prompt.", error: error.message });
+    }
+});
 
 // Proxy endpoint for Generation
 app.post('/api/generate', async (req, res) => {
@@ -98,7 +151,17 @@ app.get('/api/status/:id', async (req, res) => {
     }
 });
 
-app.listen(PORT, () => {
+const server = app.listen(PORT, () => {
     console.log(`Server running at http://localhost:${PORT}`);
     console.log(`Open http://localhost:${PORT}/experiment.html to try the MusicGPT experiment.`);
+});
+
+server.on('error', (e) => {
+    if (e.code === 'EADDRINUSE') {
+        console.error(`Error: Port ${PORT} is already in use.`);
+        console.error(`Please stop the other process running on port ${PORT} or change the PORT in server.js`);
+    } else {
+        console.error('Server error:', e);
+    }
+    process.exit(1);
 });

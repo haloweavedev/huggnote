@@ -1,10 +1,93 @@
 document.addEventListener('DOMContentLoaded', () => {
     const form = document.getElementById('musicForm');
     const consoleDiv = document.getElementById('console');
-    const resultsArea = document.getElementById('resultsArea');
-    const track1 = document.getElementById('track1');
-    const track2 = document.getElementById('track2');
     const btn = form.querySelector('button[type="submit"]');
+    
+    // Player Elements
+    const mainAudio = document.getElementById('main-audio');
+    const playPauseBtn = document.getElementById('play-pause-btn');
+    const playIcon = document.getElementById('play-icon');
+    const pauseIcon = document.getElementById('pause-icon');
+    const progressBar = document.getElementById('progress-bar');
+    const progressContainer = document.getElementById('progress-container');
+    const currentTimeEl = document.getElementById('current-time');
+    const totalTimeEl = document.getElementById('total-time');
+    
+    const playerArt = document.getElementById('player-art');
+    const playerTitle = document.getElementById('player-title');
+    const downloadLink = document.getElementById('download-link');
+
+    // State
+    let isPlaying = false;
+
+    // --- Player Logic ---
+
+    function togglePlay() {
+        if (isPlaying) {
+            pauseTrack();
+        } else {
+            playTrack();
+        }
+    }
+
+    function playTrack() {
+        mainAudio.play().then(() => {
+            isPlaying = true;
+            playIcon.style.display = 'none';
+            pauseIcon.style.display = 'block';
+        }).catch(err => console.error("Play error:", err));
+    }
+
+    function pauseTrack() {
+        mainAudio.pause();
+        isPlaying = false;
+        playIcon.style.display = 'block';
+        pauseIcon.style.display = 'none';
+    }
+
+    function updateProgress(e) {
+        const { duration, currentTime } = e.target;
+        if (isNaN(duration)) return;
+        
+        const progressPercent = (currentTime / duration) * 100;
+        progressBar.style.width = `${progressPercent}%`;
+        
+        // Update time text
+        currentTimeEl.textContent = formatTime(currentTime);
+        totalTimeEl.textContent = formatTime(duration);
+    }
+
+    function setProgress(e) {
+        const width = this.clientWidth;
+        const clickX = e.offsetX;
+        const duration = mainAudio.duration;
+        
+        mainAudio.currentTime = (clickX / width) * duration;
+    }
+
+    function formatTime(seconds) {
+        const min = Math.floor(seconds / 60);
+        const sec = Math.floor(seconds % 60);
+        return `${min}:${sec < 10 ? '0' : ''}${sec}`;
+    }
+
+    // Event Listeners for Player
+    playPauseBtn.addEventListener('click', togglePlay);
+    mainAudio.addEventListener('timeupdate', updateProgress);
+    mainAudio.addEventListener('loadedmetadata', () => {
+        totalTimeEl.textContent = formatTime(mainAudio.duration);
+    });
+    mainAudio.addEventListener('ended', () => {
+        isPlaying = false;
+        playIcon.style.display = 'block';
+        pauseIcon.style.display = 'none';
+        progressBar.style.width = '0%';
+        currentTimeEl.textContent = '0:00';
+    });
+    progressContainer.addEventListener('click', setProgress);
+
+
+    // --- Generation Logic ---
 
     function log(message, type = 'info', rawData = null) {
         const line = document.createElement('div');
@@ -23,12 +106,13 @@ document.addEventListener('DOMContentLoaded', () => {
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
         
-        resultsArea.style.display = 'none';
-        track1.style.display = 'none';
-        track2.style.display = 'none';
         btn.disabled = true;
         btn.innerHTML = '<span class="btn-text-content">Generating... <div class="loading-spinner"></div></span>';
         consoleDiv.innerHTML = '';
+        
+        // Reset player UI indication that something is happening
+        playerTitle.textContent = "Generating...";
+        playerArt.style.opacity = '0.5';
 
         const formData = {
             prompt: document.getElementById('prompt').value,
@@ -38,7 +122,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
         log(`Starting generation request...`, 'info');
         log(`Prompt: "${formData.prompt}"`, 'info');
-        log(`Request Payload:`, 'info', formData);
 
         try {
             const response = await fetch('/api/generate', {
@@ -58,15 +141,10 @@ document.addEventListener('DOMContentLoaded', () => {
             log(`ETA: ${data.eta} seconds. Waiting for results...`, 'info');
 
             const conversionId1 = data.conversion_id_1;
-            const conversionId2 = data.conversion_id_2;
-
+            
+            // Only polling for version 1 for this demo player
             if (conversionId1) {
                 pollStatus(conversionId1, 1);
-            }
-            if (conversionId2) {
-                pollStatus(conversionId2, 2);
-            } else {
-                log('No second conversion ID provided, only polling for one result.', 'info');
             }
 
         } catch (error) {
@@ -80,79 +158,56 @@ document.addEventListener('DOMContentLoaded', () => {
         
         const pollInterval = setInterval(async () => {
             try {
-                // Explicitly append the query param. 
                 const url = `/api/status/${id}?idType=conversion_id`;
-                // log(`Fetching: ${url}`, 'info'); // Uncomment for debugging if needed
-
                 const res = await fetch(url);
                 const data = await res.json();
                 
-                // Only log details if something interesting happens or it fails
-                if (!data.success) {
-                     log(`Response from /api/status/${id.substring(0,8)}...:`, 'info', data);
-                }
-
                 if (data.success && data.conversion) {
+                    console.log("Full data object from API:", data); // Add this log
                     const status = data.conversion.status;
                     
                     if (status === 'COMPLETED') {
                         clearInterval(pollInterval);
                         log(`Version ${versionIndex} COMPLETED!`, 'success');
-                        displayResult(data.conversion, versionIndex);
                         
-                        // Check if all expected tracks are done before resetting button
-                        const allTracks = document.querySelectorAll('.audio-card');
-                        let completedCount = 0;
-                        allTracks.forEach(track => {
-                            if (track.style.display === 'grid') completedCount++;
-                        });
-
-                        // Assuming two tracks are expected if conversionId2 was present
-                        const expectedTracks = track2.style.display === 'none' ? 1 : 2; 
-
-                        if (completedCount >= expectedTracks) {
-                            resetBtn();
-                        }
+                        console.log("Conversion object passed to updatePlayer:", data.conversion); // Add this log
+                        updatePlayer(data.conversion, versionIndex);
+                        resetBtn();
                     } else if (status === 'FAILED') {
                         clearInterval(pollInterval);
-                        log(`Version ${versionIndex} FAILED. Reason: ${data.conversion.status_msg || 'Unknown'}`, 'error');
+                        log(`Version ${versionIndex} FAILED.`, 'error');
                         resetBtn();
-                    } else {
-                        // Optional: Log 'Processing' periodically or just stay silent
-                        // log(`Version ${versionIndex}: ${status}...`, 'info');
                     }
-                } else if (!data.success) {
-                    log(`API status check for Version ${versionIndex} failed: ${data.message || 'Unknown error.'}`, 'error');
                 }
             } catch (err) {
                 console.error("Polling error", err);
-                log(`Polling Error for Version ${versionIndex}: ${err.message}`, 'error', err);
-                clearInterval(pollInterval); // Stop polling on client-side error
+                clearInterval(pollInterval);
                 resetBtn();
             }
-        }, 5000); // Poll every 5 seconds
+        }, 5000); 
     }
 
-    function displayResult(conversion, index) {
-        resultsArea.style.display = 'block';
-        const card = index === 1 ? track1 : track2;
-        const audio = card.querySelector('audio');
-        const link = card.querySelector('a');
-
-        const audioUrl = conversion.audio_url || conversion.conversion_path;
+    function updatePlayer(conversion, versionIndex = 1) {
+        const audioUrl = conversion[`conversion_path_${versionIndex}`] || conversion.audio_url || conversion.conversion_path;
+        const coverUrl = conversion.album_cover_path || conversion.cover_path; // API might vary
+        
         if (audioUrl) {
-            card.style.display = 'grid';
-            audio.src = audioUrl;
-            link.href = audioUrl;
-            link.textContent = `Download Version ${index}`;
+            mainAudio.src = audioUrl;
+            playerTitle.textContent = "Generated Track"; // Or use prompt excerpt
             
-            card.style.opacity = '0';
-            requestAnimationFrame(() => {
-                card.style.transition = 'opacity 0.5s ease';
-                card.style.opacity = '1';
-            });
+            if (coverUrl) {
+                playerArt.src = coverUrl;
+                playerArt.style.opacity = '1';
+            }
+            
+            downloadLink.href = audioUrl;
+            
+            // Auto play? Maybe not, let user click.
+            // But reset play state
+            pauseTrack(); 
+            mainAudio.load();
         } else {
-            log(`No audio URL found for Version ${index}.`, 'error', conversion);
+            log('No audio URL found in result.', 'error');
         }
     }
 
@@ -161,14 +216,6 @@ document.addEventListener('DOMContentLoaded', () => {
         btn.innerHTML = '<span class="btn-text-content">Generate Music</span>';
     }
 
-    fetch('/api/generate', { method: 'GET' })
-        .then(res => res.json())
-        .then(data => {
-            if (!data.success && data.message.includes('API_KEY is not set')) {
-                log('Please configure your MUSICGPT_API_KEY in the .env file.', 'error');
-                btn.disabled = true;
-                btn.innerHTML = '<span class="btn-text-content">API Key Missing!</span>';
-            }
-        })
-        .catch(() => {}); 
+    // Initial check (optional)
+    fetch('/api/generate', { method: 'GET' }).catch(() => {}); 
 });

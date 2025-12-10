@@ -206,5 +206,18 @@
         </div>
       </div>
     </main>
+    <!-- Prompt Modal -->
+    <div id="prompt-modal" style="display: none; position: fixed; inset: 0; z-index: 1000; align-items: center; justify-content: center;">
+      <div style="position: absolute; inset: 0; background: rgba(0,0,0,0.4); backdrop-filter: blur(8px);"></div>
+      <div class="card" style="position: relative; width: 90%; max-width: 500px; padding: 32px; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);">
+        <h3 style="margin-bottom: 16px;">AI Prompt Generated</h3>
+        <p class="muted">Here is the prompt generated from your details:</p>
+        <textarea id="generated-prompt" style="width: 100%; height: 120px; margin-bottom: 24px; font-family: monospace; font-size: 14px;"></textarea>
+        <div style="display: flex; gap: 12px; justify-content: flex-end;">
+          <button id="close-modal" class="btn btn-secondary">Close</button>
+          <button id="resubmit-prompt" class="btn btn-primary">Regenerate</button>
+        </div>
+      </div>
+    </div>
   </body>
 </html>

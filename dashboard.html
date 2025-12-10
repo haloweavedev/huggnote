@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dashboard — Huggnote2</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
+    <link rel="stylesheet" href="assets/css/styles.css" />
+    <link rel="stylesheet" href="assets/css/dashboard.css" />
+    <!-- Dashboard specific logic -->
+    <script defer src="assets/js/dashboard.js"></script>
+  </head>
+  <body class="dashboard-body">
+    <div class="dashboard-layout">
+      <!-- Sidebar -->
+      <aside class="sidebar">
+        <a class="logo" href="index.html" style="padding-left: 12px;">
+          <span class="logo-badge">H</span>
+          Huggnote2
+        </a>
+        
+        <nav class="sidebar-nav">
+          <button class="sidebar-link active" data-view="home">
+            <span class="material-symbols-outlined">library_music</span>
+            My Songs
+          </button>
+          <button class="sidebar-link" data-view="create">
+            <span class="material-symbols-outlined">add_circle</span>
+            Create New
+          </button>
+          <button class="sidebar-link" data-view="orders">
+            <span class="material-symbols-outlined">receipt_long</span>
+            Orders
+          </button>
+          <button class="sidebar-link" data-view="settings">
+            <span class="material-symbols-outlined">settings</span>
+            Settings
+          </button>
+        </nav>
+
+        <div class="sidebar-footer">
+          <div class="user-info">
+            <div class="user-avatar">
+              <span class="material-symbols-outlined">person</span>
+            </div>
+            <div class="user-details">
+              <span class="user-email" id="user-email-display">user@example.com</span>
+              <span class="user-plan" id="user-credits-display">0 Credits</span>
+            </div>
+          </div>
+          <button class="btn btn-sm btn-outline" id="reset-data-btn" title="Reset Data" style="margin-right: 0.5rem;">
+            <span class="material-symbols-outlined">refresh</span>
+          </button>
+          <button class="btn btn-sm btn-outline" id="logout-btn">
+            <span class="material-symbols-outlined">logout</span>
+          </button>
+        </div>
+      </aside>
+
+      <!-- Main Content Area -->
+      <main class="dashboard-main">
+        
+        <!-- View: Home (My Songs) -->
+        <div id="view-home" class="dashboard-view">
+          <header class="dashboard-header">
+            <div>
+              <h1>My Songs</h1>
+              <p class="muted">Manage and share your custom holiday songs.</p>
+            </div>
+            <button class="btn btn-primary" onclick="navigateTo('create')">
+              <span class="material-symbols-outlined">add</span>
+              New Song
+            </button>
+          </header>
+
+          <div class="dashboard-stats">
+            <div class="stat-card">
+              <div class="stat-icon purple">
+                <span class="material-symbols-outlined">music_note</span>
+              </div>
+              <div>
+                <div class="stat-value" id="stats-songs-count">0</div>
+                <div class="stat-label">Songs Created</div>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon green">
+                <span class="material-symbols-outlined">token</span>
+              </div>
+              <div>
+                <div class="stat-value" id="stats-credits-count">0</div>
+                <div class="stat-label">Credits Available</div>
+              </div>
+            </div>
+          </div>
+
+          <div id="songs-list-container" class="song-list-wrapper">
+            <!-- Populated by JS -->
+            <div class="empty-state">
+              <div class="empty-icon">
+                <span class="material-symbols-outlined">music_note</span>
+              </div>
+              <h3>No songs yet</h3>
+              <p>You haven't created any songs yet. Use a credit to get started!</p>
+              <button class="btn btn-secondary" onclick="navigateTo('create')">Create Song</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- View: Create New (Form) -->
+        <div id="view-create" class="dashboard-view" style="display: none;">
+          <header class="dashboard-header">
+            <div>
+              <h1>Create New Song</h1>
+              <p class="muted">Tell us your story and we'll craft a masterpiece.</p>
+            </div>
+            <div class="credits-badge">
+              <span class="material-symbols-outlined">token</span>
+              <span id="create-credits-display">0 Credits</span>
+            </div>
+          </header>
+
+          <!-- No Credits State -->
+          <div id="no-credits-state" class="center-card" style="display: none;">
+            <div class="empty-icon">
+              <span class="material-symbols-outlined">lock</span>
+            </div>
+            <h3>You need credits</h3>
+            <p>Purchase a package to start creating custom songs.</p>
+            <div class="pricing-mini-grid">
+              <div class="pricing-mini-card">
+                <h4>Single Pack</h4>
+                <div class="price">$79</div>
+                <ul><li>1 Song + 5 Regenerations</li></ul>
+                <button class="btn btn-primary full-width" onclick="mockPurchase('single')">Buy Single</button>
+              </div>
+              <div class="pricing-mini-card highlighted">
+                <div class="badge-mini">Best Value</div>
+                <h4>Multi Pack</h4>
+                <div class="price">$299</div>
+                <ul><li>5 Songs + Regenerations</li></ul>
+                <button class="btn btn-primary full-width" onclick="mockPurchase('multi')">Buy Multi</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Form State -->
+          <div id="create-form-container" class="form-card dashboard-form">
+            <form id="song-creation-form">
+              <div class="input-group">
+                <label>Who is this song for?</label>
+                <input type="text" name="recipient" placeholder="e.g. Sarah, Mom, My Husband" required>
+              </div>
+              
+              <div class="form-grid-2">
+                <div class="input-group">
+                  <label>Relationship</label>
+                  <select name="relationship">
+                    <option>Partner / Spouse</option>
+                    <option>Parent</option>
+                    <option>Child</option>
+                    <option>Friend</option>
+                    <option>Other</option>
+                  </select>
+                </div>
+                <div class="input-group">
+                  <label>Vibe</label>
+                  <select name="vibe">
+                    <option>Heartfelt & Emotional</option>
+                    <option>Fun & Upbeat</option>
+                    <option>Cozy & Jazzy</option>
+                    <option>Funny & Witty</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="input-group">
+                <label>Tell your story (memories, inside jokes, message)</label>
+                <textarea name="story" rows="4" placeholder="We met at a coffee shop in December..." required></textarea>
+              </div>
+
+              <button type="submit" class="btn btn-primary">
+                <span class="material-symbols-outlined">auto_awesome</span>
+                Generate Song
+              </button>
+            </form>
+          </div>
+        </div>
+
+        <!-- View: Orders -->
+        <div id="view-orders" class="dashboard-view" style="display: none;">
+          <header class="dashboard-header">
+            <div>
+              <h1>Order History</h1>
+              <p class="muted">View your past purchases and invoices.</p>
+            </div>
+          </header>
+
+          <div class="table-container">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>Order ID</th>
+                  <th>Date</th>
+                  <th>Package</th>
+                  <th>Amount</th>
+                  <th>Status</th>
+                  <th>Invoice</th>
+                </tr>
+              </thead>
+              <tbody id="orders-table-body">
+                <!-- Populated by JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- View: Settings -->
+        <div id="view-settings" class="dashboard-view" style="display: none;">
+          <header class="dashboard-header">
+            <div>
+              <h1>Settings</h1>
+              <p class="muted">Manage your profile and preferences.</p>
+            </div>
+          </header>
+
+          <div class="settings-card">
+            <h3>Profile</h3>
+            <form id="settings-form">
+              <div class="input-group">
+                <label>Email Address</label>
+                <input type="email" id="settings-email" disabled value="user@example.com" class="disabled-input">
+                <p class="helper">Contact support to change email.</p>
+              </div>
+              <div class="input-group">
+                <label>Display Name</label>
+                <input type="text" placeholder="Your Name">
+              </div>
+              <button class="btn btn-secondary">Save Changes</button>
+            </form>
+          </div>
+        </div>
+
+      </main>
+    </div>
+  </body>
+</html>

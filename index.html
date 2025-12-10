@@ -7,88 +7,167 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
     <link rel="stylesheet" href="assets/css/styles.css" />
+    <link rel="stylesheet" href="assets/css/dashboard.css" />
     <script defer src="assets/js/main.js"></script>
+    <style>
+      /* Inline override for hero relative positioning */
+      .hero { position: relative; }
+      
+      /* Example player styling */
+      .example-player {
+        background: #fff;
+        border: 1px solid var(--color-border);
+        border-radius: var(--radius-lg);
+        padding: 16px;
+        margin-bottom: 16px;
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        box-shadow: var(--shadow-sm);
+      }
+      .play-button {
+        width: 40px; 
+        height: 40px; 
+        border-radius: 50%; 
+        background: var(--color-primary); 
+        color: white; 
+        border: none;
+        display: grid; 
+        place-items: center;
+        cursor: pointer;
+        flex-shrink: 0;
+      }
+      .track-info { flex: 1; }
+      .track-title { font-weight: 600; font-size: 15px; color: var(--color-text); }
+      .track-meta { font-size: 13px; color: var(--color-text-secondary); }
+    </style>
   </head>
   <body>
     <header class="nav">
       <div class="container nav-inner">
         <a class="logo" href="index.html">
           <span class="logo-badge">H</span>
-          Huggnote2 BETA
+          Huggnote2
         </a>
         <nav class="nav-links">
+          <a href="#examples">Examples</a>
           <a href="#how">How it works</a>
           <a href="#pricing">Pricing</a>
           <a href="#faq">FAQ</a>
-          <a href="#contact">Contact</a>
-          <a class="btn btn-primary btn-mindblowing" href="#pricing"><span class="btn-text-content">Create Your Song</span></a>
+          <a href="#" data-login-trigger>Login</a>
+          <a class="btn btn-primary btn-mindblowing" href="#pricing"><span class="btn-text-content">Start Your Gift</span></a>
         </nav>
       </div>
     </header>
 
     <main>
       <section class="hero">
+        
         <div class="container hero-grid">
           <div class="hero-content">
             <div class="hero-eyebrow">Custom Holiday Songs</div>
-            <h1>Send a personalized musical gift this holiday season.</h1>
+            <h1>The most magical gift they'll get this Christmas.</h1>
             <p>
-              We craft bespoke songs from your stories, then deliver them as a magical, interactive Christmas experience.
-              Your loved one opens a snowy scene, clicks a gift box, hearts float out, and their song begins.
+              Turn your memories into a custom holiday song. Delivered as a magical, interactive experience with snow, hearts, and music.
             </p>
             <div class="hero-cta">
-              <button class="btn btn-primary" data-plan="single" data-price="$79" data-label="Single Song" data-href="order-form.html">
-                Create Your Song
-              </button>
-              <a class="btn btn-secondary" href="#how">How It Works</a>
+              <a class="btn btn-primary" href="#pricing">
+                Start Your Gift
+              </a>
+              <a class="btn btn-secondary" href="#examples">Listen to Examples</a>
             </div>
             
-            <div class="pillars">
-              <div class="pillar-card">
-                <h4>Personalized</h4>
-                <p class="muted">Tell us about your loved one and we'll create a one-of-a-kind song just for them.</p>
-              </div>
-              <div class="pillar-card">
-                <h4>Magical Delivery</h4>
-                <p class="muted">They click a gift box, hearts float out, and the custom song plays.</p>
-              </div>
-            </div>
+            <!-- Pillars removed -->
           </div>
           
-          <div class="preview-card" aria-label="Holiday preview card">
-            <div class="pill" style="margin-bottom: 20px;">December 2, 2025 — BETA Creator</div>
-            <h3>Project Scope</h3>
-            <p class="tagline" style="margin-bottom: 24px;">Huggnote2 (BETA Song Creator)</p>
-            <div class="timeline">
-              <div class="timeline-step">
-                <div class="timeline-dot">1</div>
-                <div class="timeline-content">
-                  <strong>Discovery</strong>
-                  <p class="muted">Tell us about your recipient, vibe, and Christmas style.</p>
+          <div class="preview-card" style="padding: 0; border: none; box-shadow: none; background: transparent; display: flex; justify-content: center; align-items: center; position: relative;">
+            <article class="media-card" id="track-card">
+              <div class="media-card__loading hidden" id="track-loader">
+                <span class="material-symbols-outlined">progress_activity</span>
+              </div>
+
+              <div class="media-card__header">
+                <div class="media-card__header__logo">
+                  <span class="logo-badge" style="width: 32px; height: 32px; font-size: 16px;">H</span>
                 </div>
               </div>
-              <div class="timeline-step">
-                <div class="timeline-dot">2</div>
-                <div class="timeline-content">
-                  <strong>Creation</strong>
-                  <p class="muted">We create 3 unique versions for every song in your order.</p>
+
+              <div class="media-card__content">
+                <div class="media-card__content__info">
+                  <h4 id="track-name">Christmas Magic</h4>
+                  <p id="track-artist">For Sarah</p>
                 </div>
+
+                <button class="media-card__content__btn" id="hero-play-btn">
+                  <span class="material-symbols-outlined">play_arrow</span>
+                </button>
               </div>
-              <div class="timeline-step">
-                <div class="timeline-dot">3</div>
-                <div class="timeline-content">
-                  <strong>Preview</strong>
-                  <p class="muted">Listen, pick your favorite, and complete secure checkout.</p>
+
+              <div class="media-card__controls">
+                <button class="media-card__controls__btn">
+                  <span class="material-symbols-outlined">skip_previous</span>
+                </button>
+
+                <div id="slider" class="slider" data-value="0">
+                  <span class="slider__before"></span>
+                  <span id="thumb" class="slider__thumb"></span>
+                  <span class="slider__after"></span>
                 </div>
+
+                <button class="media-card__controls__btn">
+                  <span class="material-symbols-outlined">skip_next</span>
+                </button>
               </div>
-              <div class="timeline-step">
-                <div class="timeline-dot">4</div>
-                <div class="timeline-content">
-                  <strong>Delivery</strong>
-                  <p class="muted">Share a magical Christmas gift link with hearts and music.</p>
-                </div>
-              </div>
+              
+              <audio id="hero-audio" src="assets/img/preview-sample.wav" preload="metadata"></audio>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section id="examples" class="section" style="background: var(--color-surface-2);">
+        <div class="container">
+          <div class="section-header text-center" style="margin: 0 auto 48px; max-width: 600px;">
+            <div class="section-label">Example Songs</div>
+            <h2 class="section-title">Hear the magic</h2>
+            <p class="section-subtitle">Listen to examples of songs created for other customers.</p>
+          </div>
+          
+          <div class="two-column" style="align-items: center;">
+            <div>
+               <div class="example-player">
+                 <button class="play-button" onclick="document.getElementById('audio-1').play()">▶</button>
+                 <div class="track-info">
+                   <div class="track-title">First Christmas Together</div>
+                   <div class="track-meta">Pop Ballad • For Wife</div>
+                 </div>
+                 <audio id="audio-1" src="assets/img/preview-sample.wav"></audio>
+               </div>
+               
+               <div class="example-player">
+                 <button class="play-button" onclick="document.getElementById('audio-2').play()">▶</button>
+                 <div class="track-info">
+                   <div class="track-title">Grandma's Cookies</div>
+                   <div class="track-meta">Classic Jazz • For Grandma</div>
+                 </div>
+                 <audio id="audio-2" src="assets/img/preview-sample.wav"></audio>
+               </div>
+               
+               <div class="example-player">
+                 <button class="play-button" onclick="document.getElementById('audio-3').play()">▶</button>
+                 <div class="track-info">
+                   <div class="track-title">Baby's First Snow</div>
+                   <div class="track-meta">Acoustic Folk • For Daughter</div>
+                 </div>
+                 <audio id="audio-3" src="assets/img/preview-sample.wav"></audio>
+               </div>
+            </div>
+            <div>
+              <h3>Every song is unique.</h3>
+              <p>We use your stories—the inside jokes, the special dates, the memories—to craft lyrics that could only be for them. Then we set it to the holiday vibe of your choice.</p>
+              <a href="#pricing" class="btn btn-secondary">Create Your Own</a>
             </div>
           </div>
         </div>
@@ -99,31 +178,30 @@
           <div class="section-header">
             <div>
               <div class="section-label">How It Works</div>
-              <h2 class="section-title">Four simple steps to an unforgettable gift</h2>
-              <p class="section-subtitle">A Stripe-clean journey from your story to a snowy, heart-filled experience.</p>
+              <h2 class="section-title">From your story to their ears</h2>
+              <p class="section-subtitle">Simple, secure, and magical.</p>
             </div>
-            <a class="btn btn-secondary" href="#pricing">Choose a package</a>
           </div>
           <div class="steps">
             <article class="step-card">
               <div class="step-number">1</div>
-              <h4>Fill Out Form</h4>
-              <p>Share details about your recipient, vibe, and the moments you want inside the lyrics.</p>
+              <h4>Choose Package & Pay</h4>
+              <p>Select the Single or Multi pack and complete our secure checkout first.</p>
             </article>
             <article class="step-card">
               <div class="step-number">2</div>
-              <h4>We Create</h4>
-              <p>Our team crafts 3 unique versions of your custom holiday song.</p>
+              <h4>Tell Your Story</h4>
+              <p>Fill out a simple form with the recipient's name, your relationship, and key memories.</p>
             </article>
             <article class="step-card">
               <div class="step-number">3</div>
-              <h4>Preview & Choose</h4>
-              <p>Listen to every version, pick your favorite, and proceed to a secure checkout.</p>
+              <h4>We Create</h4>
+              <p>Our AI generates your custom song(s). Use your included regenerations to get it perfect.</p>
             </article>
             <article class="step-card">
               <div class="step-number">4</div>
-              <h4>They Enjoy</h4>
-              <p>Your loved one opens a magical, snowy gift page where hearts and music come alive.</p>
+              <h4>Review & Share</h4>
+              <p>Select your favorite version and get a unique, magical URL to share with them.</p>
             </article>
           </div>
         </div>
@@ -133,119 +211,70 @@
         <div class="container pricing">
           <div class="section-header">
             <div>
-              <div class="section-label">Choose Your Package</div>
-              <h2 class="section-title">Select the perfect option for your custom holiday song gift</h2>
-              <p class="section-subtitle">Both packages include 3 song versions, beautiful delivery, and a shareable gift link.</p>
+              <div class="section-label">Pricing</div>
+              <h2 class="section-title">Give the perfect gift</h2>
             </div>
           </div>
           <div class="pricing-grid">
             <div class="pricing-card">
               <div>
-                <p class="pill">Single Song</p>
-                <h3>Perfect for one special person</h3>
-                <p class="muted">One custom personalised song crafted from your story.</p>
+                <p class="pill">Single Pack</p>
+                <h3>One special song</h3>
+                <p class="muted">Perfect for a partner, parent, or child.</p>
               </div>
               <div class="price">$79 <small>/ gift</small></div>
-              <ul>
-                <li>1 custom personalised song</li>
-                <li>3 versions to choose from</li>
-                <li>Beautiful snowy Christmas scene</li>
-                <li>Email or WhatsApp delivery</li>
-                <li>Downloadable MP3 to keep forever</li>
-                <li>Add a gift card: 30,000 brands</li>
+              <ul class="pricing-features">
+                <li>1 Custom Song</li>
+                <li><strong>5 Regenerations</strong> included</li>
+                <li>Magical Gift Link</li>
+                <li>Downloadable MP3</li>
               </ul>
-              <button class="btn btn-primary" data-plan="single" data-price="$79" data-label="Single Song" data-href="order-form.html">
-                Select Single Song
-              </button>
+              <a class="btn btn-primary" href="checkout.html?plan=single">
+                Buy Single Pack
+              </a>
             </div>
             <div class="pricing-card highlighted">
               <div class="badge">Best Value</div>
               <div>
                 <p class="pill">Multi Pack</p>
-                <h3>Share the magic with multiple people</h3>
-                <p class="muted">Up to 5 custom personalised songs with bulk savings.</p>
+                <h3>Five special songs</h3>
+                <p class="muted">Cover the whole family and save.</p>
               </div>
-              <div class="price">$299 <small>/ up to 5 songs</small></div>
-              <p class="success">Save $96 vs buying separately!</p>
-              <ul>
-                <li>Up to 5 custom personalised songs</li>
-                <li>3 versions per song to choose from</li>
-                <li>Email or WhatsApp delivery</li>
-                <li>Downloadable MP3s to keep forever</li>
-                <li>Add a gift card: 30,000 brands</li>
-                <li>Bulk buy discount applied</li>
+              <div class="price">$299 <small>/ 5 gifts</small></div>
+              <p class="success">Save $96!</p>
+              <ul class="pricing-features">
+                <li>Up to 5 Custom Songs</li>
+                <li><strong>5 Regenerations</strong> per song</li>
+                <li>Magical Gift Links</li>
+                <li>Downloadable MP3s</li>
+                <li>Priority Generation</li>
               </ul>
-              <button class="btn btn-primary" data-plan="multi" data-price="$299" data-label="Multi Pack" data-href="order-form.html">
-                Select Multi Pack
-              </button>
+              <a class="btn btn-primary" href="checkout.html?plan=multi">
+                Buy Multi Pack
+              </a>
             </div>
           </div>
         </div>
       </section>
 
-      <section class="section section-sm">
+      <section id="faq" class="section section-sm" style="background: var(--color-surface-2);">
         <div class="container">
           <div class="section-header">
-            <div>
-              <div class="section-label">Detailed Flow</div>
-              <h2 class="section-title">From your order to their magical gift</h2>
-            </div>
+            <h2 class="section-title">FAQ</h2>
           </div>
-          <div class="pillars">
-            <div class="pillar-card">
-              <h4>Fill out the order form with your song details</h4>
-              <p>Structured, Stripe-style fields keep it simple.</p>
-            </div>
-            <div class="pillar-card">
-              <h4>We create 3 unique versions of your custom song</h4>
-              <p>Hear different moods before you decide.</p>
-            </div>
-            <div class="pillar-card">
-              <h4>Preview all versions and choose your favorite</h4>
-              <p>Clean, audio-forward preview center.</p>
-            </div>
-            <div class="pillar-card">
-              <h4>Complete secure payment</h4>
-              <p>Stripe-inspired checkout with confidence cues.</p>
-            </div>
-            <div class="pillar-card">
-              <h4>Share the magical Christmas gift experience!</h4>
-              <p>Snowy scene, hearts, gift box, and your custom song.</p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section id="faq" class="section">
-        <div class="container">
-          <div class="section-header">
-            <div>
-              <div class="section-label">FAQ</div>
-              <h2 class="section-title">Answers to common questions</h2>
-            </div>
-            <a class="btn btn-secondary" href="order-form.html">Start Your Order</a>
-          </div>
-          <div class="faq">
-            <div class="faq-item">
-              <h4>How long does it take to receive the previews?</h4>
-              <p>We deliver your preview links within 2–3 business days after you submit the order form.</p>
-            </div>
-            <div class="faq-item">
-              <h4>Do I get to choose between versions?</h4>
-              <p>Yes. Every song comes with 3 unique versions. Listen to each and select your favorite before checkout.</p>
-            </div>
-            <div class="faq-item">
-              <h4>What if I need tweaks?</h4>
-              <p>Light edits to lyrics or tone are included in the preview stage. We want it to feel just right.</p>
-            </div>
-            <div class="faq-item">
-              <h4>How is the song delivered?</h4>
-              <p>Your recipient receives a magical, snowy Christmas link with a gift box interaction and audio player.</p>
-            </div>
-            <div class="faq-item">
-              <h4>Can I download the song?</h4>
-              <p>Absolutely. You can download the final MP3 and keep it forever.</p>
-            </div>
+          <div class="accordion-container">
+            <details class="accordion-item">
+              <summary class="accordion-summary"><h4>Do I pay before creating the song?</h4></summary>
+              <p>Yes. To start the custom generation process, please select a package and complete payment. You'll then be directed immediately to the form to tell your story.</p>
+            </details>
+            <details class="accordion-item">
+              <summary class="accordion-summary"><h4>What if I don't like the first version?</h4></summary>
+              <p>No problem! The Single Pack comes with 5 regenerations, and the Multi Pack includes 5 regenerations for <em>each</em> of the 5 songs, so you can tweak the style or lyrics until it's perfect.</p>
+            </details>
+            <details class="accordion-item">
+              <summary class="accordion-summary"><h4>How do I share it?</h4></summary>
+              <p>You'll receive a unique link (e.g., huggnote.com/gift/xyz) that opens a beautiful snowy page with your song. You can send this via WhatsApp, Email, or SMS.</p>
+            </details>
           </div>
         </div>
       </section>
@@ -261,7 +290,6 @@
           <a href="#how">How it works</a>
           <a href="#pricing">Pricing</a>
           <a href="#faq">FAQ</a>
-          <a href="admin-dashboard.html">Admin</a>
         </nav>
 
         <div class="footer-social-row">
@@ -277,5 +305,35 @@
         </p>
       </div>
     </footer>
+    <!-- Login Modal -->
+    <div class="modal-overlay" id="login-modal" style="display: none;">
+      <div class="modal-card">
+        <button class="modal-close" id="close-login-modal">&times;</button>
+        <div class="modal-header">
+          <h2>Welcome back</h2>
+          <p class="muted">Sign in to access your songs and orders.</p>
+        </div>
+        <div class="modal-body">
+          <button class="btn btn-secondary google-btn" id="google-login">
+            <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google" width="20">
+            Continue with Google
+          </button>
+          
+          <div class="divider"><span>or</span></div>
+          
+          <form id="login-form">
+            <div class="input-group">
+              <label for="login-email">Email</label>
+              <input type="email" id="login-email" placeholder="you@example.com" required>
+            </div>
+            <div class="input-group">
+              <label for="login-password">Password</label>
+              <input type="password" id="login-password" placeholder="••••••••" required>
+            </div>
+            <button type="submit" class="btn btn-primary full-width">Sign In</button>
+          </form>
+        </div>
+      </div>
+    </div>
   </body>
 </html>

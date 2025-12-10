@@ -125,7 +125,48 @@
                 <div class="console-line">Ready to generate...</div>
               </div>
 
-              <div id="resultsArea" style="margin-top: 24px; display: none;">
+              <!-- Spotify-like Player (Placeholder / Result) -->
+              <div id="playerArea" style="margin-top: 24px;">
+                <div class="spotify-player-container">
+                  <div class="spotify-player">
+                    <div class="track-info">
+                      <img src="https://lalals.s3.us-east-1.amazonaws.com/GenImages/87c1cf51-ee7a-42e0-a484-c502646401f5.jpg" alt="Album Art" class="album-art" id="player-art">
+                      <div class="track-details">
+                        <div class="track-name" id="player-title">Terrace Moonlight</div>
+                        <div class="track-artist" id="player-artist">MusicGPT</div>
+                      </div>
+                    </div>
+                    
+                    <div class="player-controls">
+                      <div class="control-buttons">
+                        <button class="control-btn icon-only" aria-label="Previous"><svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M13 2.5L5 8L13 13.5V2.5Z"/><path d="M5 2.5H3V13.5H5V2.5Z"/></svg></button>
+                        <button class="control-btn play-btn" id="play-pause-btn" aria-label="Play">
+                          <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" id="play-icon" style="display: block;"><path d="M8 5V19L19 12L8 5Z"/></svg>
+                          <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" id="pause-icon" style="display: none;"><path d="M6 19H10V5H6V19ZM14 5V19H18V5H14Z"/></svg>
+                        </button>
+                        <button class="control-btn icon-only" aria-label="Next"><svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M3 2.5L11 8L3 13.5V2.5Z"/><path d="M11 2.5H13V13.5H11V2.5Z"/></svg></button>
+                      </div>
+                      
+                      <div class="playback-bar">
+                        <span class="time current" id="current-time">0:00</span>
+                        <div class="progress-bar-wrapper" id="progress-container">
+                          <div class="progress-bar" id="progress-bar"></div>
+                        </div>
+                        <span class="time total" id="total-time">0:00</span>
+                      </div>
+                    </div>
+                    
+                    <!-- Hidden Audio Element -->
+                    <audio id="main-audio" src="https://lalals.s3.amazonaws.com/conversions/standard/f3cf55d3-85ab-49bf-aded-d9dde0887688.mp3" preload="metadata"></audio>
+                  </div>
+                  <div style="text-align: center; margin-top: 12px;">
+                    <a href="https://lalals.s3.amazonaws.com/conversions/standard/f3cf55d3-85ab-49bf-aded-d9dde0887688.mp3" id="download-link" class="btn btn-secondary" style="font-size: 12px; padding: 6px 12px; background: rgba(255,255,255,0.1); border: none; color: #fff;">Download MP3</a>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Legacy Results Area (Hidden but kept for script compatibility until updated) -->
+              <div id="resultsArea" style="display: none;">
                 <h4>Generated Tracks</h4>
                 <div class="audio-grid" style="grid-template-columns: 1fr; gap: 16px; margin-top: 16px;">
                   <article class="audio-card" id="track1" style="display:none;">
