@@ -156,17 +156,23 @@ app.get('/api/status/:id', async (req, res) => {
     }
 });
 
-const server = app.listen(PORT, () => {
-    console.log(`Server running at http://localhost:${PORT}`);
-    console.log(`Open http://localhost:${PORT}/experiment.html to try the MusicGPT experiment.`);
-});
+// Vercel Serverless Export
+module.exports = app;
 
-server.on('error', (e) => {
-    if (e.code === 'EADDRINUSE') {
-        console.error(`Error: Port ${PORT} is already in use.`);
-        console.error(`Please stop the other process running on port ${PORT} or change the PORT in server.js`);
-    } else {
-        console.error('Server error:', e);
-    }
-    process.exit(1);
-});
+// Local Development
+if (require.main === module) {
+    const server = app.listen(PORT, () => {
+        console.log(`Server running at http://localhost:${PORT}`);
+        console.log(`Open http://localhost:${PORT}/experiment.html to try the MusicGPT experiment.`);
+    });
+
+    server.on('error', (e) => {
+        if (e.code === 'EADDRINUSE') {
+            console.error(`Error: Port ${PORT} is already in use.`);
+            console.error(`Please stop the other process running on port ${PORT} or change the PORT in server.js`);
+        } else {
+            console.error('Server error:', e);
+        }
+        process.exit(1);
+    });
+}
