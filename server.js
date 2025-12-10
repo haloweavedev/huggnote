@@ -32,7 +32,11 @@ if (GROQ_API_KEY) {
 
 // Endpoint to generate prompt using Groq
 app.post('/api/create-prompt', async (req, res) => {
+    console.log("[SERVER] /api/create-prompt hit");
+    console.log("[SERVER] Request Body:", JSON.stringify(req.body, null, 2));
+
     if (!groq) {
+        console.error("[SERVER] Groq API not configured.");
         return res.status(500).json({ success: false, message: "Groq API is not configured on the server." });
     }
 
@@ -43,29 +47,34 @@ app.post('/api/create-prompt', async (req, res) => {
         Focus on style, mood, instrumentation, and key lyrical themes.
         
         Input Data:
-        - Recipient: ${formData.recipientName} (${formData.relationship})
-        - Occasion/Context: ${formData.who}
-        - Emotion: ${formData.feelings}
-        - Vibe: ${formData.vibe}
-        - Holiday Style: ${formData.style}
+        - Recipient: ${formData.recipient}
+        - Relationship: ${formData.relationship}
+        - Tone/Feelings: ${formData.tone}
+        - Overall Vibe: ${formData.vibe}
+        - Christmas Style: ${formData.style}
         - Story/Memories: ${formData.story}
-        - Keywords: ${formData.keywords}
-        - Personalisation Level: ${formData.personalisation}
-        - Include Name: ${formData.includeName}
+        - Personalization Level: ${formData.personalization}
+        - Song Length: ${formData.length}
+        - Include Name: ${formData.include_name ? 'Yes' : 'No'}
         
         Output only the prompt string. No explanations.`;
+
+        console.log("[SERVER] Sending prompt to Groq:", systemPrompt);
 
         const chatCompletion = await groq.chat.completions.create({
             messages: [{ role: "user", content: systemPrompt }],
             model: "llama-3.3-70b-versatile", // Using a versatile model available on Groq
             temperature: 0.7,
-            max_tokens: 150,
+            max_completion_tokens: 150,
         });
 
         const generatedPrompt = chatCompletion.choices[0]?.message?.content || "";
+        console.log("[SERVER] Groq Raw Response:", generatedPrompt);
         
         // Truncate to ensure 300 char limit if AI overshot slightly
         const finalPrompt = generatedPrompt.length > 300 ? generatedPrompt.substring(0, 297) + "..." : generatedPrompt;
+        
+        console.log("[SERVER] Final Prompt sent to client:", finalPrompt);
 
         res.json({ success: true, prompt: finalPrompt });
 
@@ -131,12 +140,8 @@ app.get('/api/status/:id', async (req, res) => {
         const data = await musicGptResponse.json();
         console.log(`[SERVER] MusicGPT /byId response status: ${musicGptResponse.status}`);
         
-        // Log a summary of the body to avoid spamming the console with huge objects if successful
-        if (data.success) {
-             console.log(`[SERVER] MusicGPT /byId response: Success. Status: ${data.conversion?.status}`);
-        } else {
-             console.log(`[SERVER] MusicGPT /byId response body:`, data);
-        }
+        // Always log the full body for debugging
+        console.log(`[SERVER] MusicGPT /byId response body:`, JSON.stringify(data, null, 2));
 
         if (!musicGptResponse.ok) {
             const errorMessage = data.message || data.detail || `MusicGPT API error: ${musicGptResponse.statusText}`;

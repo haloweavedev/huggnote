@@ -51,11 +51,8 @@
               <span class="user-plan" id="user-credits-display">0 Credits</span>
             </div>
           </div>
-          <button class="btn btn-sm btn-outline" id="reset-data-btn" title="Reset Data" style="margin-right: 0.5rem;">
-            <span class="material-symbols-outlined">refresh</span>
-          </button>
           <button class="btn btn-sm btn-outline" id="logout-btn">
-            <span class="material-symbols-outlined">logout</span>
+            Log Out
           </button>
         </div>
       </aside>
@@ -148,45 +145,139 @@
           </div>
 
           <!-- Form State -->
-          <div id="create-form-container" class="form-card dashboard-form">
+          <div id="create-form-container" class="form-card dashboard-form" style="max-width: 800px;">
             <form id="song-creation-form">
-              <div class="input-group">
-                <label>Who is this song for?</label>
-                <input type="text" name="recipient" placeholder="e.g. Sarah, Mom, My Husband" required>
-              </div>
               
-              <div class="form-grid-2">
-                <div class="input-group">
-                  <label>Relationship</label>
-                  <select name="relationship">
-                    <option>Partner / Spouse</option>
-                    <option>Parent</option>
-                    <option>Child</option>
-                    <option>Friend</option>
-                    <option>Other</option>
-                  </select>
-                </div>
-                <div class="input-group">
-                  <label>Vibe</label>
-                  <select name="vibe">
-                    <option>Heartfelt & Emotional</option>
-                    <option>Fun & Upbeat</option>
-                    <option>Cozy & Jazzy</option>
-                    <option>Funny & Witty</option>
-                  </select>
-                </div>
-              </div>
-
+              <!-- 1. Who is the song for? -->
               <div class="input-group">
-                <label>Tell your story (memories, inside jokes, message)</label>
-                <textarea name="story" rows="4" placeholder="We met at a coffee shop in December..." required></textarea>
+                <label>Who is the song for?</label>
+                <input type="text" name="recipient" placeholder="e.g. Mum, Sarah, my boyfriend, my best friend" required>
               </div>
 
-              <button type="submit" class="btn btn-primary">
-                <span class="material-symbols-outlined">auto_awesome</span>
-                Generate Song
-              </button>
+              <div class="form-grid-2">
+                <!-- 2. Relationship -->
+                <div class="input-group">
+                  <label>How would you describe your relationship?</label>
+                  <select name="relationship">
+                    <optgroup label="Family">
+                      <option>Mum / Dad</option>
+                      <option>Brother / Sister</option>
+                      <option>Son / Daughter</option>
+                      <option>Aunt / Uncle / Cousin</option>
+                      <option>Other family</option>
+                    </optgroup>
+                    <optgroup label="Friend">
+                      <option>Close friend</option>
+                      <option>Good friend</option>
+                      <option>New friend / colleague</option>
+                    </optgroup>
+                    <optgroup label="Romantic">
+                      <option>Boyfriend / Girlfriend</option>
+                      <option>Partner / Spouse</option>
+                      <option>Someone I’m dating</option>
+                    </optgroup>
+                    <optgroup label="Neutral / Not sure">
+                      <option>Someone special (keep non-romantic)</option>
+                      <option>Someone I care about (general)</option>
+                    </optgroup>
+                  </select>
+                </div>
+
+                <!-- 3. Tone boundary -->
+                <div class="input-group">
+                  <label>How should the song express your feelings?</label>
+                  <select name="tone">
+                    <option>Warm & caring (but not romantic)</option>
+                    <option>Romantic & loving</option>
+                    <option>Light & flirty</option>
+                    <option>Keep it neutral</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="form-grid-2">
+                <!-- 4. Overall Vibe -->
+                <div class="input-group">
+                  <label>How should the song feel overall?</label>
+                  <select name="vibe">
+                    <option>Heartfelt & emotional</option>
+                    <option>Fun & joyful</option>
+                    <option>Romantic & cosy</option>
+                    <option>Uplifting & festive</option>
+                    <option>Surprise me</option>
+                  </select>
+                </div>
+
+                <!-- 5. Christmas Style -->
+                <div class="input-group">
+                  <label>Christmas style</label>
+                  <select name="style">
+                    <option>Very Christmassy (bells + big festive feel)</option>
+                    <option>Warm & wintry (cosy Christmas)</option>
+                    <option>Modern pop holiday</option>
+                    <option>Acoustic & intimate</option>
+                    <option>Surprise me</option>
+                  </select>
+                </div>
+              </div>
+
+              <!-- 6. Tell us a little about them -->
+              <div class="input-group">
+                <label>Tell us a little about them</label>
+                <textarea name="story" rows="5" placeholder="Share a couple of details, memories, special things, in-jokes or words you’d love included." required></textarea>
+                <p class="helper">The magic box — this gives the AI everything it needs.</p>
+              </div>
+
+              <div class="form-grid-2">
+                 <!-- 7. Personalisation level -->
+                 <div class="input-group">
+                  <label>Personalisation level</label>
+                  <select name="personalization">
+                    <option>Very personal (use name + details)</option>
+                    <option>Personal but gentle</option>
+                    <option>More general</option>
+                  </select>
+                </div>
+                
+                <!-- 8. Song length -->
+                <div class="input-group">
+                  <label>Song length</label>
+                  <select name="length">
+                    <option>Short & sweet</option>
+                    <option>Standard</option>
+                    <option>Full song</option>
+                  </select>
+                </div>
+              </div>
+
+              <!-- Optional Toggle -->
+              <div class="input-group" style="display: flex; align-items: center; gap: 12px; margin-top: 8px;">
+                 <input type="checkbox" id="include-name" name="include_name" checked style="width: auto; margin: 0;">
+                 <label for="include-name" style="margin: 0; font-weight: 500;">Include their name in the lyrics?</label>
+              </div>
+
+              <div style="margin-top: 32px;">
+                <button type="submit" class="btn btn-primary full-width">
+                  <span class="material-symbols-outlined">auto_awesome</span>
+                  Generate Prompt
+                </button>
+              </div>
             </form>
+
+            <!-- Generated Prompt Section -->
+            <div id="generated-prompt-container" style="display: none; margin-top: 32px; padding: 24px; background: #f0fdf4; border: 1px solid #dcfce7; border-radius: 16px;">
+              <h4 style="margin-top: 0; color: #166534; display: flex; align-items: center; gap: 8px;">
+                <span class="material-symbols-outlined">lightbulb</span> 
+                Generated Prompt
+              </h4>
+              <p id="generated-prompt-text" style="color: #15803d; font-family: monospace; font-size: 14px; background: rgba(255,255,255,0.5); padding: 12px; border-radius: 8px; border: 1px solid rgba(0,0,0,0.05);"></p>
+              <div style="margin-top: 16px; display: flex; justify-content: flex-end; gap: 12px;">
+                 <button class="btn btn-sm btn-secondary" onclick="copyPrompt()">Copy</button>
+                 <button class="btn btn-sm btn-primary" id="finalize-song-btn">
+                    <span class="material-symbols-outlined">music_note</span> Create Song (1 Credit)
+                 </button>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -241,6 +332,15 @@
               </div>
               <button class="btn btn-secondary">Save Changes</button>
             </form>
+            
+            <div style="margin-top: 32px; padding-top: 32px; border-top: 1px solid var(--color-border);">
+              <h3>Danger Zone</h3>
+              <p class="muted" style="font-size: 14px;">Resetting data will clear all local storage, including your session and created songs. This cannot be undone.</p>
+              <button class="btn btn-secondary" id="reset-data-btn" style="border-color: var(--color-error); color: var(--color-error);">
+                <span class="material-symbols-outlined">refresh</span>
+                Reset Local Data
+              </button>
+            </div>
           </div>
         </div>
 

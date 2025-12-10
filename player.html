@@ -14,23 +14,81 @@
     <div class="player-hero">
       <div class="snow" aria-hidden="true"></div>
       <div>
-        <p class="pill">For Sarah · From Alex</p>
-        <h1>Open your holiday surprise</h1>
+        <p class="pill" id="player-pill">For You · From Huggnote</p>
+        <h1 id="player-hero-title">Open your holiday surprise</h1>
         <p class="section-subtitle">Tap the gift box — hearts will float out and your custom song will begin.</p>
         <div class="gift" data-gift aria-label="Open gift">
           <span>🎁</span>
           <div class="hearts" data-hearts></div>
         </div>
         <div class="player-card" data-player-card style="display: none">
-          <h2>With you, every Christmas feels like home</h2>
-          <p class="muted">A cozy, heartfelt song crafted just for you.</p>
-          <audio controls src="assets/img/preview-sample.wav"></audio>
+          <h2 id="player-title">Your Song Title</h2>
+          <p class="muted" id="player-subtitle">A custom song crafted just for you.</p>
+          <audio controls id="player-audio" src=""></audio>
           <div class="copy-box" style="margin-top: 12px">
-            <input id="player-link" value="https://huggnote2.gift/player/abc123" readonly />
+            <input id="player-link" value="" readonly />
             <button class="btn btn-secondary" type="button" data-copy="#player-link">Copy link</button>
           </div>
         </div>
       </div>
     </div>
+    <script>
+      document.addEventListener('DOMContentLoaded', () => {
+        const params = new URLSearchParams(window.location.search);
+        
+        const title = params.get('title');
+        const recipient = params.get('recipient');
+        const vibe = params.get('vibe');
+        const audioUrl = params.get('audio');
+        
+        const playerTitle = document.getElementById('player-title');
+        const playerPill = document.getElementById('player-pill');
+        const playerSubtitle = document.getElementById('player-subtitle');
+        const playerAudio = document.getElementById('player-audio');
+        const playerLink = document.getElementById('player-link');
+
+        if (title) playerTitle.textContent = title;
+        if (recipient) playerPill.textContent = `For ${recipient}`;
+        if (vibe) playerSubtitle.textContent = `A ${vibe} song crafted just for you.`;
+        
+        if (audioUrl && audioUrl !== 'undefined' && audioUrl !== 'null') {
+            playerAudio.src = audioUrl;
+            // Attempt to autoplay
+            playerAudio.play().catch(e => console.log("Autoplay prevented:", e));
+        } else {
+            // Handle missing audio
+            playerAudio.style.display = 'none';
+            const errorMsg = document.createElement('p');
+            errorMsg.className = 'error';
+            errorMsg.style.textAlign = 'center';
+            errorMsg.textContent = "Song file is missing or invalid.";
+            playerAudio.parentElement.insertBefore(errorMsg, playerAudio);
+        }
+        
+        playerLink.value = window.location.href;
+
+        // Automatically trigger the gift interaction visually after a short delay
+        // but keep audio playing from the above direct play call
+        const gift = document.querySelector("[data-gift]");
+        const hearts = document.querySelector("[data-hearts]");
+        const playerCard = document.querySelector("[data-player-card]");
+
+        if (gift && hearts && playerCard) {
+            setTimeout(() => {
+                hearts.innerHTML = "";
+                for (let i = 0; i < 14; i++) {
+                    const h = document.createElement("div");
+                    h.className = "heart";
+                    h.style.left = `${20 + Math.random() * 60}%`;
+                    h.style.animationDelay = `${Math.random() * 0.6}s`;
+                    hearts.appendChild(h);
+                }
+                hearts.style.opacity = "1";
+                setTimeout(() => (hearts.style.opacity = "0"), 2000);
+                playerCard.style.display = "block";
+            }, 1000); // 1 second delay to allow initial DOM render
+        }
+      });
+    </script>
   </body>
 </html>

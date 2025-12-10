@@ -88,13 +88,14 @@
 /* Dashboard Styles */
 .dashboard-body {
   background: var(--color-surface-2);
-  min-height: 100vh;
+  height: 100vh;
+  overflow: hidden;
 }
 
 .dashboard-layout {
   display: grid;
   grid-template-columns: 260px 1fr;
-  min-height: 100vh;
+  height: 100vh;
 }
 
 .sidebar {
@@ -218,6 +219,8 @@
 
 .dashboard-main {
   padding: 40px;
+  overflow-y: auto;
+  height: 100vh;
 }
 
 .dashboard-header {
