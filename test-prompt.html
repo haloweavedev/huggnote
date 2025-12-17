@@ -328,132 +328,154 @@ Output ONLY valid JSON. No markdown formatting.</textarea>
         <h2 style="margin-top: 0;">3. Results</h2>
         
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
-            <div>
-                <h3><span class="material-symbols-outlined" style="vertical-align: bottom;">lightbulb</span> Prompt</h3>
-                <div id="result-prompt" style="padding: 1rem; background: #f0fdf4; border: 1px solid #bbf7d0; color: #15803d; border-radius: 8px; white-space: pre-wrap; font-family: monospace; font-size: 13px;"><em>Run the test to see the generated prompt.</em></div>
-            </div>
-
-            <div>
-                <h3><span class="material-symbols-outlined" style="vertical-align: bottom;">api</span> API Request Body</h3>
-                <pre id="result-json">{}</pre>
-            </div>
-        </div>
-    </div>
-
-    <script>
-        const API_BASE_URL = (() => {
-            const hostname = window.location.hostname;
-            const port = window.location.port;
-            if (port === '3000' || hostname === 'localhost' || hostname === '127.0.0.1') return 'http://localhost:3000';
-            return ''; 
-        })();
-
-        // Visual selection logic for radio cards
-        document.querySelectorAll('.radio-card input').forEach(radio => {
-            radio.addEventListener('change', (e) => {
-                // Remove selected class from siblings in same name group
-                const name = e.target.name;
-                document.querySelectorAll(`input[name="${name}"]`).forEach(input => {
-                    input.closest('.radio-card').classList.remove('selected');
-                });
-                // Add to current
-                e.target.closest('.radio-card').classList.add('selected');
-            });
-            // Init state
-            if(radio.checked) {
-                radio.closest('.radio-card').classList.add('selected');
-            }
-        });
-
-        document.getElementById('generate-btn').addEventListener('click', async () => {
-            const btn = document.getElementById('generate-btn');
-            const originalText = btn.innerHTML;
+                        <div>
+                            <h3><span class="material-symbols-outlined" style="vertical-align: bottom;">lightbulb</span> Prompt</h3>
+                            <div id="result-prompt" style="padding: 1rem; background: #f0fdf4; border: 1px solid #bbf7d0; color: #15803d; border-radius: 8px; white-space: pre-wrap; font-family: monospace; font-size: 13px;"><em>Run the test to see the generated prompt.</em></div>
+                            <div style="text-align: right; font-size: 0.8em; color: #666; margin-top: 5px;">
+                                Character count: <span id="prompt-char-count">0</span> / 280 <span id="prompt-char-warning" style="color: red; display: none;">(Too long!)</span>
+                            </div>
+                        </div>
             
-            // 1. Gather Data
-            const form = document.getElementById('song-creation-form');
-            const formData = new FormData(form);
-            const formObject = Object.fromEntries(formData.entries());
+                        <div>
+                            <h3><span class="material-symbols-outlined" style="vertical-align: bottom;">api</span> API Request Body</h3>
+                            <pre id="result-json">{}</pre>
+                        </div>
+                    </div>
+                </div>
             
-            const systemPromptTemplate = document.getElementById('system-prompt').value;
-
-            // UI State
-            btn.innerHTML = 'Generating...';
-            btn.disabled = true;
-            document.getElementById('result-prompt').innerHTML = '<em>Generating...</em>';
-            document.getElementById('result-json').textContent = '...';
-
-            try {
-                // 2. Call API
-                const response = await fetch(`${API_BASE_URL}/api/test-groq-prompt`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        formData: formObject,
-                        systemPromptTemplate: systemPromptTemplate
-                    })
-                });
-
-                const result = await response.json();
-
-                if (result.success) {
-                    // 3. Display Prompt (Raw output)
-                    document.getElementById('result-prompt').textContent = result.prompt;
-
-                    // 4. Construct & Display MusicGPT JSON
-                    let promptText = result.prompt;
-                    let styleText = formObject.genreStyle || 'Pop';
-
-                    // Try parsing JSON from Groq
-                    try {
-                        let raw = result.prompt.trim();
-                        // Remove markdown code blocks if present
-                        if (raw.startsWith('```json')) {
-                            raw = raw.replace(/^```json\s*/, '').replace(/\s*```$/, '');
-                        } else if (raw.startsWith('```')) {
-                            raw = raw.replace(/^```\s*/, '').replace(/\s*```$/, '');
+                <script>
+                    const API_BASE_URL = (() => {
+                        const hostname = window.location.hostname;
+                        const port = window.location.port;
+                        if (port === '3000' || hostname === 'localhost' || hostname === '127.0.0.1') return 'http://localhost:3000';
+                        return ''; 
+                    })();
+            
+                    // Visual selection logic for radio cards
+                    document.querySelectorAll('.radio-card input').forEach(radio => {
+                        radio.addEventListener('change', (e) => {
+                            // Remove selected class from siblings in same name group
+                            const name = e.target.name;
+                            document.querySelectorAll(`input[name="${name}"]`).forEach(input => {
+                                input.closest('.radio-card').classList.remove('selected');
+                            });
+                            // Add to current
+                            e.target.closest('.radio-card').classList.add('selected');
+                        });
+                        // Init state
+                        if(radio.checked) {
+                            radio.closest('.radio-card').classList.add('selected');
                         }
-
-                        const parsed = JSON.parse(raw);
-                        
-                        if (parsed.prompt) {
-                            promptText = parsed.prompt;
-                        }
-                        if (parsed.music_style) {
-                            styleText = parsed.music_style;
-                        }
-                    } catch (e) {
-                        console.log("Response was not valid JSON, parsing failed.", e);
-                        // Fallback: If it looks like JSON but failed (maybe minor syntax error), 
-                        // try to regex extract the prompt to avoid sending raw JSON characters
-                        const promptMatch = result.prompt.match(/"prompt":\s*"([^"]+)"/);
-                        if (promptMatch && promptMatch[1]) {
-                            promptText = promptMatch[1];
+                    });
+            
+                    function updateCharCount(text) {
+                        const charCountSpan = document.getElementById('prompt-char-count');
+                        const charWarningSpan = document.getElementById('prompt-char-warning');
+                        const count = text.length;
+                        charCountSpan.textContent = count;
+                        if (count > 280) {
+                            charCountSpan.style.color = 'red';
+                            charWarningSpan.style.display = 'inline';
+                        } else {
+                            charCountSpan.style.color = '#666';
+                            charWarningSpan.style.display = 'none';
                         }
                     }
-
-                    // Now directly use the extracted/fallback values
-                    const musicGptBody = {
-                        prompt: promptText,
-                        music_style: styleText,
-                        make_instrumental: false,
-                        vocal_only: false
-                    };
-                    
-                    document.getElementById('result-json').textContent = JSON.stringify(musicGptBody, null, 2);
-                } else {
-                    document.getElementById('result-prompt').textContent = `Error: ${result.message}`;
-                    document.getElementById('result-json').textContent = JSON.stringify(result, null, 2);
-                }
-
-            } catch (err) {
-                console.error(err);
-                document.getElementById('result-prompt').textContent = `Client Error: ${err.message}`;
-            } finally {
-                btn.innerHTML = originalText;
-                btn.disabled = false;
-            }
-        });
-    </script>
+            
+                    document.getElementById('generate-btn').addEventListener('click', async () => {
+                        const btn = document.getElementById('generate-btn');
+                        const originalText = btn.innerHTML;
+                        
+                        // 1. Gather Data
+                        const form = document.getElementById('song-creation-form');
+                        const formData = new FormData(form);
+                        const formObject = Object.fromEntries(formData.entries());
+                        
+                        const systemPromptTemplate = document.getElementById('system-prompt').value;
+            
+                        // UI State
+                        btn.innerHTML = 'Generating...';
+                        btn.disabled = true;
+                        document.getElementById('result-prompt').innerHTML = '<em>Generating...</em>';
+                        document.getElementById('result-json').textContent = '...';
+                        updateCharCount(''); // Reset count
+                        
+            
+                        try {
+                            // 2. Call API
+                            const response = await fetch(`${API_BASE_URL}/api/test-groq-prompt`, {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({
+                                    formData: formObject,
+                                    systemPromptTemplate: systemPromptTemplate
+                                })
+                            });
+            
+                            const result = await response.json();
+            
+                            if (result.success) {
+                                // 3. Display Prompt (Raw output)
+                                document.getElementById('result-prompt').textContent = result.prompt;
+            
+                                // 4. Construct & Display MusicGPT JSON
+                                let promptText = result.prompt;
+                                let styleText = formObject.genreStyle || 'Pop';
+            
+                                // Try parsing JSON from Groq
+                                try {
+                                    let raw = result.prompt.trim();
+                                    // Remove markdown code blocks if present
+                                    if (raw.startsWith('```json')) {
+                                        raw = raw.replace(/^```json\s*/, '').replace(/\s*```$/, '');
+                                    } else if (raw.startsWith('```')) {
+                                        raw = raw.replace(/^```\s*/, '').replace(/\s*```$/, '');
+                                    }
+            
+                                    const parsed = JSON.parse(raw);
+                                    
+                                    if (parsed.prompt) {
+                                        promptText = parsed.prompt;
+                                    }
+                                    if (parsed.music_style) {
+                                        styleText = parsed.music_style;
+                                    }
+                                } catch (e) {
+                                    console.log("Response was not valid JSON, parsing failed.", e);
+                                    // Fallback: If it looks like JSON but failed (maybe minor syntax error), 
+                                    // try to regex extract the prompt to avoid sending raw JSON characters
+                                    const promptMatch = result.prompt.match(/"prompt":\s*"([^"]+)"/);
+                                    if (promptMatch && promptMatch[1]) {
+                                        promptText = promptMatch[1];
+                                    }
+                                }
+            
+                                // Now directly use the extracted/fallback values
+                                const musicGptBody = {
+                                    prompt: promptText,
+                                    music_style: styleText,
+                                    make_instrumental: false,
+                                    vocal_only: false
+                                };
+                                
+                                document.getElementById('result-json').textContent = JSON.stringify(musicGptBody, null, 2);
+                                updateCharCount(promptText); // Update count for the actual prompt sent to MusicGPT
+                            } else {
+                                document.getElementById('result-prompt').textContent = `Error: ${result.message}`;
+                                document.getElementById('result-json').textContent = JSON.stringify(result, null, 2);
+                                updateCharCount(''); // Reset count on error
+                            }
+            
+                        } catch (err) {
+                            console.error(err);
+                            document.getElementById('result-prompt').textContent = `Client Error: ${err.message}`;
+                            updateCharCount(''); // Reset count on error
+                        } finally {
+                            btn.innerHTML = originalText;
+                            btn.disabled = false;
+                        }
+                    });
+                </script>
 </body>
 </html>
 </body>
