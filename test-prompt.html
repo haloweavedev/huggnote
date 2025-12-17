@@ -288,7 +288,9 @@
             <div class="input-group">
                 <label>System Prompt Template</label>
                 <textarea id="system-prompt" class="code-editor" rows="20">You are an expert songwriter and music producer. Your goal is to help create truly great songs.
-Based on the user's request, generate a concise musical prompt (max 270 chars) that describes the style, mood, instruments, and tempo. Even if the input details are sparse, use your creativity to suggest a vibrant and engaging musical landscape that guarantees a great song. Do not include specific story details here, just the musical vibe.
+Based on the user's request, generate a response in JSON format with two fields:
+1. "prompt": A detailed, descriptive musical prompt (max 280 chars) for an AI music generator. Use specific tags for instruments, tempo, mood, and vocal style. Even if input is bland, be creative and ensure a rich description.
+2. "music_style": The single best overarching genre for this song (e.g., "Pop", "Rock", "Jazz", "R&B", "Country"). Derive this from the user's preferences or the overall vibe.
 
 Input Data:
 - Recipient: {{recipientName}} (Nickname: {{recipientNickname}})
@@ -304,7 +306,7 @@ Input Data:
   - Genre: {{genreStyle}}
   - Instruments: {{instrumentPreferences}}
 
-Output ONLY the musical prompt string. No explanations or JSON formatting.</textarea>
+Output ONLY valid JSON. No markdown formatting.</textarea>
             </div>
 
             <button id="generate-btn" class="btn btn-primary full-width">
@@ -391,10 +393,27 @@ Output ONLY the musical prompt string. No explanations or JSON formatting.</text
                     document.getElementById('result-prompt').textContent = result.prompt;
 
                     // 4. Construct & Display MusicGPT JSON
-                    // Now directly use the Groq result as the prompt for MusicGPT, without parsing for lyrics.
+                    let promptText = result.prompt;
+                    let styleText = formObject.genreStyle || 'Pop';
+
+                    // Try parsing JSON from Groq
+                    try {
+                        const parsed = JSON.parse(result.prompt);
+                        if (parsed.prompt) {
+                            promptText = parsed.prompt;
+                        }
+                        if (parsed.music_style) {
+                            styleText = parsed.music_style;
+                        }
+                    } catch (e) {
+                        // Not JSON, assume plain text prompt and default style
+                        console.log("Response was not JSON, using as raw prompt.");
+                    }
+
+                    // Now directly use the extracted/fallback values
                     const musicGptBody = {
-                        prompt: result.prompt,
-                        music_style: formObject.genreStyle || 'Pop',
+                        prompt: promptText,
+                        music_style: styleText,
                         make_instrumental: false,
                         vocal_only: false
                     };
