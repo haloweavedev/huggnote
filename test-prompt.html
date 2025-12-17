@@ -292,6 +292,13 @@ Based on the user's request, generate a response in JSON format with two fields:
 1. "prompt": A detailed, descriptive musical prompt (max 280 chars) for an AI music generator. Use specific tags for instruments, tempo, mood, and vocal style. Even if input is bland, be creative and ensure a rich description.
 2. "music_style": The single best overarching genre for this song (e.g., "Pop", "Rock", "Jazz", "R&B", "Country"). Derive this from the user's preferences or the overall vibe.
 
+Use these examples as a guide for the detail and tone of the "prompt" field:
+- "Create a melancholic, atmospheric indie-pop/R&B track inspired by D4VD. Slow tempo (70–85 BPM). Use ambient guitars, reverb-drenched textures, and subtle trap-style drums. Include emotional male vocals with a vulnerable tone, singing about heartbreak. Blending bedroom pop and alternative R&B, with a haunting hook and minimalist verses."
+- "A rock ballad track with multiple instrumental layers and a female vocal. Slow build-up, emotional crescendo, distorted guitars in the chorus."
+- "A pop/rock track with a male vocal singing to his partner. Upbeat tempo, catchy guitar riff, driving bassline, optimistic and romantic vibe."
+- "A sad track about losing a partner with female vocals in a modern pop style. Piano-led, soft synths, downtempo, emotive delivery."
+- "A romantic track performed by a male vocal with pop influence and heavy piano use. Warm acoustic guitar layers, sentimental melody, 90 BPM."
+
 Input Data:
 - Recipient: {{recipientName}} (Nickname: {{recipientNickname}})
 - Relationship: {{relationship}}
