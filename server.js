@@ -63,7 +63,7 @@ app.post('/api/create-prompt', async (req, res) => {
 
         const chatCompletion = await groq.chat.completions.create({
             messages: [{ role: "user", content: systemPrompt }],
-            model: "llama-3.3-70b-versatile", // Using a versatile model available on Groq
+            model: "openai/gpt-oss-120b", // Using a versatile model available on Groq
             temperature: 0.7,
             max_completion_tokens: 150,
         });
@@ -80,6 +80,72 @@ app.post('/api/create-prompt', async (req, res) => {
 
     } catch (error) {
         console.error("Error generating prompt with Groq:", error);
+        res.status(500).json({ success: false, message: "Failed to generate prompt.", error: error.message });
+    }
+});
+
+// Endpoint to TEST generate prompt using Groq with CUSTOM System Prompt
+app.post('/api/test-groq-prompt', async (req, res) => {
+    console.log("[SERVER] /api/test-groq-prompt hit");
+    
+    if (!groq) {
+        console.error("[SERVER] Groq API not configured.");
+        return res.status(500).json({ success: false, message: "Groq API is not configured on the server." });
+    }
+
+    try {
+        const { systemPromptTemplate, formData } = req.body;
+        
+        if (!systemPromptTemplate) {
+            return res.status(400).json({ success: false, message: "Missing systemPromptTemplate" });
+        }
+
+        // Replace placeholders {{key}} with formData values
+        let finalSystemPrompt = systemPromptTemplate;
+        
+        // Map of replacements
+        const replacements = {
+            '{{recipientName}}': formData.recipientName || '',
+            '{{recipientNickname}}': formData.recipientNickname || '',
+            '{{relationship}}': formData.relationship || '',
+            '{{pronunciation}}': formData.pronunciation || '',
+            '{{senderMessage}}': formData.senderMessage || '',
+            '{{theme}}': formData.theme || '',
+            '{{aboutThem}}': formData.aboutThem || '',
+            '{{moreInfo}}': formData.moreInfo || '',
+            '{{voiceType}}': formData.voiceType || '',
+            '{{genreStyle}}': formData.genreStyle || '',
+            '{{instrumentPreferences}}': formData.instrumentPreferences || '',
+            '{{vibe}}': formData.vibe || '',
+            '{{deliverySpeed}}': formData.deliverySpeed || ''
+        };
+
+        for (const [key, value] of Object.entries(replacements)) {
+            // Replace all occurrences
+            finalSystemPrompt = finalSystemPrompt.split(key).join(value);
+        }
+
+        console.log("[SERVER] Sending TEST prompt to Groq:", finalSystemPrompt);
+
+        const chatCompletion = await groq.chat.completions.create({
+            messages: [{ role: "user", content: finalSystemPrompt }],
+            model: "llama-3.3-70b-versatile",
+            temperature: 0.7,
+            max_completion_tokens: 150,
+        });
+
+        console.log("[SERVER] Full Groq Response Object:", JSON.stringify(chatCompletion, null, 2));
+
+        const generatedPrompt = chatCompletion.choices[0]?.message?.content || "";
+        console.log("[SERVER] Groq Raw Response:", generatedPrompt);
+        
+        // Truncate
+        const finalPrompt = generatedPrompt.length > 300 ? generatedPrompt.substring(0, 297) + "..." : generatedPrompt;
+        
+        res.json({ success: true, prompt: finalPrompt });
+
+    } catch (error) {
+        console.error("Error generating TEST prompt with Groq:", error);
         res.status(500).json({ success: false, message: "Failed to generate prompt.", error: error.message });
     }
 });

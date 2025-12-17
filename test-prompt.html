@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prompt Engineering Test — Huggnote2</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Lora:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/styles.css">
+    <link rel="stylesheet" href="assets/css/dashboard.css">
+    <style>
+        body {
+            background-color: #f3f4f6;
+            padding: 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        .test-layout {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            align-items: start;
+        }
+        .card {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            margin-bottom: 24px;
+        }
+        .full-width-col {
+            grid-column: 1 / -1;
+        }
+        pre {
+            background: #1e293b;
+            color: #e2e8f0;
+            padding: 1rem;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-size: 14px;
+            white-space: pre-wrap;
+        }
+        textarea.code-editor {
+            font-family: monospace;
+            background: #f8fafc;
+            border: 1px solid #cbd5e1;
+            font-size: 13px;
+            line-height: 1.5;
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+        }
+        
+        /* Form Field Styles matching the "React" look slightly */
+        .section-title {
+            font-family: 'Lora', serif;
+            color: #1e293b;
+            font-size: 1.25rem;
+            margin-bottom: 1rem;
+            font-weight: 500;
+        }
+        .subsection-title {
+             color: #64748b;
+             font-size: 0.875rem;
+             margin-bottom: 0.5rem;
+        }
+        .radio-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 1rem;
+        }
+        .radio-card {
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 1rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: center;
+        }
+        .radio-card:hover {
+            border-color: #94a3b8;
+            background: #f8fafc;
+        }
+        .radio-card.selected {
+            border-color: #3b82f6;
+            background: #eff6ff;
+            color: #1d4ed8;
+        }
+        .radio-card input {
+            display: none;
+        }
+        .radio-label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+        .radio-desc {
+            font-size: 0.75rem;
+            color: #64748b;
+        }
+        
+        /* HugeIcons placeholders */
+        .icon-placeholder {
+            display: inline-block;
+            width: 24px;
+            height: 24px;
+            background: #cbd5e1;
+            border-radius: 4px;
+            margin-bottom: 8px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="test-layout">
+        <!-- Left Column: Inputs -->
+        <div>
+            <!-- Recipient Information -->
+            <div class="card">
+                <h2 class="section-title">Who is this song for?</h2>
+                <form id="song-creation-form">
+                    
+                    <div class="form-grid-2">
+                        <div class="input-group">
+                            <label>Name <span style="color:red">*</span></label>
+                            <input type="text" name="recipientName" placeholder="Name" required value="Sarah">
+                        </div>
+                        <div class="input-group">
+                            <label>What do you call them?</label>
+                            <input type="text" name="recipientNickname" placeholder="Petnames / nicknames etc.">
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <label>Relationship <span style="color:red">*</span></label>
+                        <input type="text" name="relationship" placeholder="Mum, Dad, Son, Daughter, Girlfriend..." required value="Best Friend">
+                    </div>
+
+                    <div class="input-group">
+                        <label>Pronunciation</label>
+                        <input type="text" name="pronunciation" placeholder="Write phonetically if complicated spelling">
+                    </div>
+
+                    <div class="input-group">
+                        <label>Add a short message <span style="color:red">*</span></label>
+                        <textarea name="senderMessage" rows="3" placeholder="A personal message to accompany your song..." required>Merry Christmas to my favorite person!</textarea>
+                    </div>
+                <!-- Form continues in other cards but kept inside one form tag conceptually for JS, but visually separated -->
+                
+            </div>
+
+            <!-- Theme Selection -->
+            <div class="card">
+                <h2 class="section-title">Choose a theme <span style="color:red">*</span></h2>
+                <div class="radio-grid">
+                    <!-- Themes -->
+                    <label class="radio-card">
+                        <input type="radio" name="theme" value="merry-christmas" checked>
+                        <span class="icon-placeholder" style="background: #10b981;"></span>
+                        <span class="radio-label">Merry Christmas</span>
+                        <span class="radio-desc">Traditional, Festive and Joyful</span>
+                    </label>
+                    <label class="radio-card">
+                        <input type="radio" name="theme" value="happy-holidays">
+                        <span class="icon-placeholder" style="background: #f59e0b;"></span>
+                        <span class="radio-label">Happy Holidays</span>
+                        <span class="radio-desc">Fun, Happy, Playful</span>
+                    </label>
+                    <label class="radio-card">
+                        <input type="radio" name="theme" value="mistletoe-kisses">
+                        <span class="icon-placeholder" style="background: #ef4444;"></span>
+                        <span class="radio-label">Mistletoe Kisses</span>
+                        <span class="radio-desc">Romantic or Flirty</span>
+                    </label>
+                    <label class="radio-card">
+                        <input type="radio" name="theme" value="christmas-wish">
+                        <span class="icon-placeholder" style="background: #8b5cf6;"></span>
+                        <span class="radio-label">A Christmas Wish</span>
+                        <span class="radio-desc">Loving, Emotional, but Hopeful</span>
+                    </label>
+                    <label class="radio-card">
+                        <input type="radio" name="theme" value="happy-new-year">
+                        <span class="icon-placeholder" style="background: #3b82f6;"></span>
+                        <span class="radio-label">Happy New Year</span>
+                        <span class="radio-desc">Celebratory, Hopeful, Fun</span>
+                    </label>
+                    <label class="radio-card">
+                        <input type="radio" name="theme" value="new-years-wish">
+                        <span class="icon-placeholder" style="background: #6366f1;"></span>
+                        <span class="radio-label">New Year's Wish</span>
+                        <span class="radio-desc">Emotional, Sentimental, Heartfelt</span>
+                    </label>
+                </div>
+            </div>
+
+            <!-- About Them -->
+            <div class="card">
+                <h2 class="section-title">About Them <span style="color:red">*</span></h2>
+                <div class="input-group">
+                    <label>What do you admire most about them?</label>
+                    <textarea name="aboutThem" rows="4" placeholder="What do you admire most about them?" required>She is incredibly kind, always there for me, and makes the best cookies.</textarea>
+                </div>
+                <div class="input-group">
+                    <label>More Info</label>
+                    <textarea name="moreInfo" rows="4" placeholder="Story, phrase or keywords you want to include">Remember that time we got lost in New York?</textarea>
+                </div>
+            </div>
+
+            <!-- Musical Preferences -->
+            <div class="card">
+                <h2 class="section-title">Musical Preferences <span class="subsection-title">(Optional)</span></h2>
+                
+                <div class="input-group">
+                    <label>Voice Type</label>
+                    <div class="radio-grid" style="grid-template-columns: repeat(3, 1fr);">
+                        <label class="radio-card">
+                            <input type="radio" name="voiceType" value="male">
+                            <span class="radio-label">Male Voice</span>
+                        </label>
+                        <label class="radio-card">
+                            <input type="radio" name="voiceType" value="female">
+                            <span class="radio-label">Female Voice</span>
+                        </label>
+                        <label class="radio-card">
+                            <input type="radio" name="voiceType" value="no-preference" checked>
+                            <span class="radio-label">No Preference</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label>Genre Style</label>
+                    <input type="text" name="genreStyle" placeholder="e.g., Pop, Country, R&B, Acoustic, Jazz, Rock..." value="Pop">
+                </div>
+
+                <div class="input-group">
+                    <label>Instrument Preferences</label>
+                    <input type="text" name="instrumentPreferences" placeholder="e.g., Piano, Guitar, Strings, Upbeat drums...">
+                </div>
+            </div>
+
+            <!-- Vibe -->
+            <div class="card">
+                <h2 class="section-title">One last thing...select overall vibe? <span style="color:red">*</span></h2>
+                <div class="radio-grid" style="grid-template-columns: repeat(3, 1fr);">
+                    <label class="radio-card">
+                        <input type="radio" name="vibe" value="loving" checked>
+                        <span class="radio-label">Loving</span>
+                        <span class="radio-desc">All the Feels</span>
+                    </label>
+                    <label class="radio-card">
+                        <input type="radio" name="vibe" value="friendly-fun">
+                        <span class="radio-label">Friendly/Fun</span>
+                        <span class="radio-desc">Lighthearted & Upbeat</span>
+                    </label>
+                    <label class="radio-card">
+                        <input type="radio" name="vibe" value="formal">
+                        <span class="radio-label">Formal</span>
+                        <span class="radio-desc">Best for Acquaintances</span>
+                    </label>
+                </div>
+            </div>
+
+            <!-- Delivery Speed -->
+            <div class="card">
+                <h2 class="section-title">Choose Your Delivery Speed</h2>
+                <div class="radio-grid" style="grid-template-columns: 1fr 1fr;">
+                    <label class="radio-card">
+                        <input type="radio" name="deliverySpeed" value="standard" checked>
+                        <span class="radio-label">Standard</span>
+                        <span class="radio-desc">Within 24 hours</span>
+                    </label>
+                    <label class="radio-card" style="border-color: #f59e0b; background: #fffbeb;">
+                        <input type="radio" name="deliverySpeed" value="express">
+                        <span class="radio-label" style="color: #b45309;">Express ⚡</span>
+                        <span class="radio-desc">Within 1 hour (+€10)</span>
+                    </label>
+                </div>
+            </div>
+            
+            </form>
+        </div>
+
+        <!-- Right Column: System Prompt & Actions -->
+        <div class="card" style="position: sticky; top: 2rem;">
+            <div class="input-group">
+                <label>System Prompt Template</label>
+                <textarea id="system-prompt" class="code-editor" rows="20">You are an expert songwriter and music producer.
+Based on the user's request, generate a response in JSON format with two fields:
+1. "musical_prompt": A concise description (max 200 chars) of the style, mood, instruments, and tempo. Do not include specific story details here, just the musical vibe.
+2. "lyrics": Two verses and a chorus based on the "Story", "Message" and "About Them". Structure it clearly.
+
+Input Data:
+- Recipient: {{recipientName}} (Nickname: {{recipientNickname}})
+- Relationship: {{relationship}}
+- Pronunciation: {{pronunciation}}
+- Message: {{senderMessage}}
+- Theme: {{theme}}
+- About Them: {{aboutThem}}
+- More Info: {{moreInfo}}
+- Vibe: {{vibe}}
+- Musical Preferences:
+  - Voice: {{voiceType}}
+  - Genre: {{genreStyle}}
+  - Instruments: {{instrumentPreferences}}
+
+Output ONLY valid JSON. No markdown formatting.</textarea>
+            </div>
+
+            <button id="generate-btn" class="btn btn-primary full-width">
+                <span class="material-symbols-outlined">science</span>
+                Test Generate
+            </button>
+        </div>
+    </div>
+
+    <!-- Results: Full Width (Outside Grid) -->
+    <div class="card" style="margin-top: 2rem;">
+        <h2 style="margin-top: 0;">3. Results</h2>
+        
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
+            <div>
+                <h3><span class="material-symbols-outlined" style="vertical-align: bottom;">lightbulb</span> Generated Groq Output</h3>
+                <div id="result-prompt" style="padding: 1rem; background: #f0fdf4; border: 1px solid #bbf7d0; color: #15803d; border-radius: 8px; white-space: pre-wrap; font-family: monospace; font-size: 13px;"><em>Run the test to see the generated prompt.</em></div>
+            </div>
+
+            <div>
+                <h3><span class="material-symbols-outlined" style="vertical-align: bottom;">api</span> MusicGPT Request Body</h3>
+                <pre id="result-json">{}</pre>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE_URL = (() => {
+            const hostname = window.location.hostname;
+            const port = window.location.port;
+            if (port === '3000' || hostname === 'localhost' || hostname === '127.0.0.1') return 'http://localhost:3000';
+            return ''; 
+        })();
+
+        // Visual selection logic for radio cards
+        document.querySelectorAll('.radio-card input').forEach(radio => {
+            radio.addEventListener('change', (e) => {
+                // Remove selected class from siblings in same name group
+                const name = e.target.name;
+                document.querySelectorAll(`input[name="${name}"]`).forEach(input => {
+                    input.closest('.radio-card').classList.remove('selected');
+                });
+                // Add to current
+                e.target.closest('.radio-card').classList.add('selected');
+            });
+            // Init state
+            if(radio.checked) {
+                radio.closest('.radio-card').classList.add('selected');
+            }
+        });
+
+        document.getElementById('generate-btn').addEventListener('click', async () => {
+            const btn = document.getElementById('generate-btn');
+            const originalText = btn.innerHTML;
+            
+            // 1. Gather Data
+            const form = document.getElementById('song-creation-form');
+            const formData = new FormData(form);
+            const formObject = Object.fromEntries(formData.entries());
+            
+            const systemPromptTemplate = document.getElementById('system-prompt').value;
+
+            // UI State
+            btn.innerHTML = 'Generating...';
+            btn.disabled = true;
+            document.getElementById('result-prompt').innerHTML = '<em>Generating...</em>';
+            document.getElementById('result-json').textContent = '...';
+
+            try {
+                // 2. Call API
+                const response = await fetch(`${API_BASE_URL}/api/test-groq-prompt`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        formData: formObject,
+                        systemPromptTemplate: systemPromptTemplate
+                    })
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    // 3. Display Prompt (Raw output)
+                    document.getElementById('result-prompt').textContent = result.prompt;
+
+                    // 4. Construct & Display MusicGPT JSON
+                    let promptText = result.prompt;
+                    let lyricsText = null;
+
+                    // Try parsing JSON from Groq
+                    try {
+                        const parsed = JSON.parse(result.prompt);
+                        if (parsed.musical_prompt) {
+                            promptText = parsed.musical_prompt;
+                        }
+                        if (parsed.lyrics) {
+                            if (typeof parsed.lyrics === 'object' && parsed.lyrics !== null) {
+                                // Convert object (e.g. {verse1: "...", chorus: "..."}) to string
+                                lyricsText = Object.values(parsed.lyrics).join('\n\n');
+                            } else {
+                                lyricsText = String(parsed.lyrics);
+                            }
+                        }
+                    } catch (e) {
+                        // Not JSON, assume plain text prompt
+                        console.log("Response was not JSON, using as raw prompt.");
+                    }
+
+                    const musicGptBody = {
+                        prompt: promptText,
+                        music_style: formObject.genreStyle || 'Pop',
+                        make_instrumental: false,
+                        vocal_only: false
+                    };
+                    
+                    if (lyricsText) {
+                        musicGptBody.lyrics = lyricsText;
+                    }
+
+                    document.getElementById('result-json').textContent = JSON.stringify(musicGptBody, null, 2);
+                } else {
+                    document.getElementById('result-prompt').textContent = `Error: ${result.message}`;
+                    document.getElementById('result-json').textContent = JSON.stringify(result, null, 2);
+                }
+
+            } catch (err) {
+                console.error(err);
+                document.getElementById('result-prompt').textContent = `Client Error: ${err.message}`;
+            } finally {
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            }
+        });
+    </script>
+</body>
+</html>

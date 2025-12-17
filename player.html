@@ -3,91 +3,495 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Gift Player — Huggnote2</title>
+    <title>Your Song — Huggnote</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="assets/css/styles.css" />
-    <script defer src="assets/js/main.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded" rel="stylesheet" />
+    <style>
+      :root {
+        --color-text: #ffffff;
+        --color-subtext: #b3b3b3;
+        --color-bg: #121212;
+        --color-card: #181818;
+        --color-primary: #1ed760;
+        --font-family: "Inter", sans-serif;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        padding: 0;
+        font-family: var(--font-family);
+        background: #000;
+        color: var(--color-text);
+        overflow: hidden;
+        height: 100vh;
+        width: 100vw;
+      }
+
+      /* Video Layer */
+      .video-container {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 0;
+      }
+
+      video {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: opacity 1s ease;
+      }
+
+      #loop-video {
+        opacity: 0;
+        z-index: 1;
+      }
+
+      #intro-video {
+        z-index: 2;
+        opacity: 1;
+      }
+
+      /* Start Overlay */
+      #start-overlay {
+        position: absolute;
+        inset: 0;
+        z-index: 100;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        background: rgba(0,0,0,0.6);
+        backdrop-filter: blur(8px);
+        transition: opacity 0.5s ease;
+      }
+
+      .play-button-large {
+        width: 80px;
+        height: 80px;
+        background: var(--color-primary);
+        border-radius: 50%;
+        display: grid;
+        place-items: center;
+        cursor: pointer;
+        transition: transform 0.2s;
+        box-shadow: 0 4px 20px rgba(30, 215, 96, 0.4);
+      }
+
+      .play-button-large:hover {
+        transform: scale(1.05);
+      }
+
+      .play-button-large span {
+        font-size: 48px;
+        color: #000;
+      }
+
+      /* Main Content Overlay */
+      #content-overlay {
+        position: absolute;
+        inset: 0;
+        z-index: 10;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        opacity: 0;
+        transition: opacity 2s ease;
+        padding: 20px;
+        background: rgba(0, 0, 0, 0.2); /* Slight tint for readability */
+        backdrop-filter: blur(0px); /* Animated to blur later */
+      }
+
+      #content-overlay.visible {
+        opacity: 1;
+        backdrop-filter: blur(8px);
+      }
+
+      /* Custom Message */
+      .custom-message {
+        text-align: center;
+        max-width: 600px;
+        margin-bottom: 40px;
+        text-shadow: 0 2px 10px rgba(0,0,0,0.5);
+        animation: float 6s ease-in-out infinite;
+      }
+
+      .custom-message h2 {
+        font-size: clamp(24px, 4vw, 36px);
+        font-weight: 700;
+        margin: 0 0 16px 0;
+        line-height: 1.2;
+      }
+
+      .custom-message p {
+        font-size: clamp(16px, 3vw, 20px);
+        opacity: 0.9;
+        margin: 0;
+      }
+
+      @keyframes float {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-10px); }
+      }
+
+      /* Spotify Card */
+      .spotify-card {
+        background: var(--color-card);
+        width: 100%;
+        max-width: 350px;
+        border-radius: 16px; /* Increased radius */
+        padding: 24px;
+        box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+      }
+
+      .album-art {
+        width: 100%;
+        aspect-ratio: 1;
+        background: #333;
+        border-radius: 8px; /* Slightly rounded corners for art */
+        overflow: hidden;
+        position: relative;
+        box-shadow: 0 8px 16px rgba(0,0,0,0.3);
+      }
+
+      .album-art img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      .track-info {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+      }
+
+      .track-title {
+        font-size: 20px;
+        font-weight: 700;
+        color: var(--color-text);
+        margin: 0;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .track-artist {
+        font-size: 14px;
+        color: var(--color-subtext);
+        margin: 0;
+      }
+
+      .progress-container {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+
+      .progress-bar {
+        width: 100%;
+        height: 4px;
+        background: #4d4d4d;
+        border-radius: 2px;
+        position: relative;
+        cursor: pointer;
+      }
+
+      .progress-fill {
+        height: 100%;
+        background: var(--color-text);
+        border-radius: 2px;
+        width: 0%;
+      }
+
+      .progress-knob {
+        position: absolute;
+        right: -6px;
+        top: -4px;
+        width: 12px;
+        height: 12px;
+        background: #fff;
+        border-radius: 50%;
+        opacity: 0;
+        transition: opacity 0.2s;
+      }
+
+      .progress-bar:hover .progress-fill {
+        background: var(--color-primary);
+      }
+
+      .progress-bar:hover .progress-knob {
+        opacity: 1;
+      }
+
+      .time-stamps {
+        display: flex;
+        justify-content: space-between;
+        font-size: 12px;
+        color: var(--color-subtext);
+      }
+
+      .controls {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-top: 4px;
+      }
+
+      .btn-control {
+        background: none;
+        border: none;
+        color: var(--color-subtext);
+        cursor: pointer;
+        display: grid;
+        place-items: center;
+        transition: color 0.2s;
+      }
+
+      .btn-control:hover {
+        color: var(--color-text);
+      }
+
+      .btn-control.main-play {
+        width: 56px;
+        height: 56px;
+        background: #fff;
+        border-radius: 50%;
+        color: #000;
+        transition: transform 0.2s;
+      }
+      
+      .btn-control.main-play:hover {
+        transform: scale(1.05);
+      }
+
+      .btn-control span {
+        font-size: 24px;
+      }
+      
+      .btn-control.main-play span {
+        font-size: 32px;
+      }
+
+      /* Responsive adjustments */
+      @media (max-width: 480px) {
+        .spotify-card {
+            max-width: 300px;
+            padding: 20px;
+        }
+        .album-art {
+            aspect-ratio: 1;
+        }
+      }
+    </style>
   </head>
   <body>
-    <div class="player-hero">
-      <div class="snow" aria-hidden="true"></div>
-      <div>
-        <p class="pill" id="player-pill">For You · From Huggnote</p>
-        <h1 id="player-hero-title">Open your holiday surprise</h1>
-        <p class="section-subtitle">Tap the gift box — hearts will float out and your custom song will begin.</p>
-        <div class="gift" data-gift aria-label="Open gift">
-          <span>🎁</span>
-          <div class="hearts" data-hearts></div>
+    <!-- Video Backgrounds -->
+    <div class="video-container">
+      <video id="loop-video" loop muted playsinline>
+        <source src="assets/videos/song-screen-shot.mp4" type="video/mp4" />
+      </video>
+      <video id="intro-video" playsinline>
+        <source src="assets/videos/intro-video-optimised.mp4" type="video/mp4" />
+      </video>
+    </div>
+
+    <!-- Start Overlay -->
+    <div id="start-overlay">
+      <div class="custom-message" style="margin-bottom: 24px; pointer-events: none;">
+         <h2>For You</h2>
+         <p>Tap to open your special gift</p>
+      </div>
+      <div class="play-button-large" id="start-btn">
+        <span class="material-symbols-rounded">play_arrow</span>
+      </div>
+    </div>
+
+    <!-- Main UI Overlay -->
+    <div id="content-overlay">
+      
+      <!-- Custom Message Area -->
+      <div class="custom-message">
+        <h2 id="display-recipient">Merry Christmas</h2>
+        <p id="display-message"></p>
+      </div>
+
+      <!-- Player Card -->
+      <div class="spotify-card">
+        <div class="album-art">
+          <img src="assets/img/hero-bg.jpg" alt="Album Art" id="album-cover" />
         </div>
-        <div class="player-card" data-player-card style="display: none">
-          <h2 id="player-title">Your Song Title</h2>
-          <p class="muted" id="player-subtitle">A custom song crafted just for you.</p>
-          <audio controls id="player-audio" src=""></audio>
-          <div class="copy-box" style="margin-top: 12px">
-            <input id="player-link" value="" readonly />
-            <button class="btn btn-secondary" type="button" data-copy="#player-link">Copy link</button>
+        
+        <div class="track-info">
+          <h3 class="track-title" id="song-title">Song Title</h3>
+          <p class="track-artist">Huggnote Bespoke</p>
+        </div>
+
+        <div class="progress-container">
+          <div class="progress-bar" id="progress-bar">
+            <div class="progress-fill" id="progress-fill">
+                <div class="progress-knob"></div>
+            </div>
           </div>
+          <div class="time-stamps">
+            <span id="current-time">0:00</span>
+            <span id="duration">0:00</span>
+          </div>
+        </div>
+
+        <div class="controls">
+          <button class="btn-control"><span class="material-symbols-rounded">shuffle</span></button>
+          <button class="btn-control"><span class="material-symbols-rounded">skip_previous</span></button>
+          <button class="btn-control main-play" id="play-pause-btn">
+            <span class="material-symbols-rounded" id="play-icon">pause</span>
+          </button>
+          <button class="btn-control"><span class="material-symbols-rounded">skip_next</span></button>
+          <button class="btn-control"><span class="material-symbols-rounded">repeat</span></button>
         </div>
       </div>
     </div>
-    <script>
-      document.addEventListener('DOMContentLoaded', () => {
-        const params = new URLSearchParams(window.location.search);
-        
-        const title = params.get('title');
-        const recipient = params.get('recipient');
-        const vibe = params.get('vibe');
-        const audioUrl = params.get('audio');
-        
-        const playerTitle = document.getElementById('player-title');
-        const playerPill = document.getElementById('player-pill');
-        const playerSubtitle = document.getElementById('player-subtitle');
-        const playerAudio = document.getElementById('player-audio');
-        const playerLink = document.getElementById('player-link');
 
-        if (title) playerTitle.textContent = title;
-        if (recipient) playerPill.textContent = `For ${recipient}`;
-        if (vibe) playerSubtitle.textContent = `A ${vibe} song crafted just for you.`;
+    <!-- Audio Element (Hidden) -->
+    <audio id="main-audio"></audio>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        // Elements
+        const introVideo = document.getElementById("intro-video");
+        const loopVideo = document.getElementById("loop-video");
+        const startOverlay = document.getElementById("start-overlay");
+        const contentOverlay = document.getElementById("content-overlay");
+        const startBtn = document.getElementById("start-btn");
+        const audio = document.getElementById("main-audio");
+        
+        // Player UI Elements
+        const playPauseBtn = document.getElementById("play-pause-btn");
+        const playIcon = document.getElementById("play-icon");
+        const progressBar = document.getElementById("progress-bar");
+        const progressFill = document.getElementById("progress-fill");
+        const currentTimeEl = document.getElementById("current-time");
+        const durationEl = document.getElementById("duration");
+
+        // Data from URL
+        const params = new URLSearchParams(window.location.search);
+        const title = params.get("title") || "A Special Song";
+        const recipient = params.get("recipient") || "You";
+        const message = params.get("message") || "";
+        const audioUrl = params.get("audio");
+        const vibe = params.get("vibe");
+
+        // Populate UI
+        document.getElementById("song-title").textContent = title;
+        document.getElementById("display-recipient").textContent = `For ${recipient}`;
+        document.getElementById("display-message").textContent = message;
         
         if (audioUrl && audioUrl !== 'undefined' && audioUrl !== 'null') {
-            playerAudio.src = audioUrl;
-            // Attempt to autoplay
-            playerAudio.play().catch(e => console.log("Autoplay prevented:", e));
-        } else {
-            // Handle missing audio
-            playerAudio.style.display = 'none';
-            const errorMsg = document.createElement('p');
-            errorMsg.className = 'error';
-            errorMsg.style.textAlign = 'center';
-            errorMsg.textContent = "Song file is missing or invalid.";
-            playerAudio.parentElement.insertBefore(errorMsg, playerAudio);
+          audio.src = audioUrl;
+        }
+
+        // --- Sequence Logic ---
+
+        // 1. User Interaction (Tap to Start)
+        startBtn.addEventListener("click", () => {
+          // Hide start overlay
+          startOverlay.style.opacity = "0";
+          setTimeout(() => startOverlay.style.display = "none", 500);
+
+          // Play Intro Video
+          introVideo.play().catch(e => console.log("Video play error:", e));
+          // Note: We don't play audio yet, we wait for intro to finish? 
+          // Or does the intro video imply the start of the experience?
+          // Usually intro videos have their own sound. If not, we might want to start audio later.
+          // Let's assume Intro Video has sound (it's an mp4). 
+        });
+
+        // 2. Transition Logic
+        introVideo.addEventListener("ended", () => {
+            console.log("Intro ended, switching to loop");
+            
+            // Start Loop Video
+            loopVideo.play();
+            
+            // Fade out intro, show loop
+            introVideo.style.opacity = "0";
+            loopVideo.style.opacity = "1";
+            
+            // Show Content Overlay
+            contentOverlay.classList.add("visible");
+            
+            // Start Audio
+            if (audio.src) {
+                audio.play().then(() => {
+                    isPlaying = true;
+                    updatePlayIcon();
+                }).catch(e => console.log("Audio play error:", e));
+            }
+        });
+
+        // --- Player Controls ---
+        
+        let isPlaying = false;
+
+        function updatePlayIcon() {
+            playIcon.textContent = isPlaying ? "pause" : "play_arrow";
+        }
+
+        playPauseBtn.addEventListener("click", () => {
+            if (audio.paused) {
+                audio.play();
+                isPlaying = true;
+            } else {
+                audio.pause();
+                isPlaying = false;
+            }
+            updatePlayIcon();
+        });
+
+        // Update Progress
+        audio.addEventListener("timeupdate", () => {
+            const percent = (audio.currentTime / audio.duration) * 100;
+            progressFill.style.width = `${percent}%`;
+            currentTimeEl.textContent = formatTime(audio.currentTime);
+            if (!isNaN(audio.duration)) {
+                durationEl.textContent = formatTime(audio.duration);
+            }
+        });
+
+        // Seek
+        progressBar.addEventListener("click", (e) => {
+            const rect = progressBar.getBoundingClientRect();
+            const pos = (e.clientX - rect.left) / rect.width;
+            audio.currentTime = pos * audio.duration;
+        });
+
+        function formatTime(seconds) {
+            const m = Math.floor(seconds / 60);
+            const s = Math.floor(seconds % 60);
+            return `${m}:${s < 10 ? '0' : ''}${s}`;
         }
         
-        playerLink.value = window.location.href;
-
-        // Automatically trigger the gift interaction visually after a short delay
-        // but keep audio playing from the above direct play call
-        const gift = document.querySelector("[data-gift]");
-        const hearts = document.querySelector("[data-hearts]");
-        const playerCard = document.querySelector("[data-player-card]");
-
-        if (gift && hearts && playerCard) {
-            setTimeout(() => {
-                hearts.innerHTML = "";
-                for (let i = 0; i < 14; i++) {
-                    const h = document.createElement("div");
-                    h.className = "heart";
-                    h.style.left = `${20 + Math.random() * 60}%`;
-                    h.style.animationDelay = `${Math.random() * 0.6}s`;
-                    hearts.appendChild(h);
-                }
-                hearts.style.opacity = "1";
-                setTimeout(() => (hearts.style.opacity = "0"), 2000);
-                playerCard.style.display = "block";
-            }, 1000); // 1 second delay to allow initial DOM render
-        }
+        // Handle Audio End
+        audio.addEventListener("ended", () => {
+            isPlaying = false;
+            updatePlayIcon();
+            audio.currentTime = 0; // Reset or leave at end? Spotify usually stops or repeats.
+        });
       });
     </script>
   </body>

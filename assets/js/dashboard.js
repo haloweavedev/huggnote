@@ -287,6 +287,7 @@ function setupFormHandler() {
                   title: `Song for ${lastForm.recipient || 'Someone'}`,
                   recipient: lastForm.recipient || 'Unknown',
                   vibe: lastForm.vibe || 'Custom',
+                  message: lastForm.message || '',
                   date: new Date().toLocaleDateString(),
                   status: "Processing",
                   coverColor: getRandomColor(),
@@ -520,7 +521,8 @@ function openPlayer(songId) {
             title: song.title,
             recipient: song.recipient,
             vibe: song.vibe,
-            audio: song.audioUrl
+            audio: song.audioUrl,
+            message: song.message || ''
         });
         // Open in new tab
         window.open(`player.html?${params.toString()}`, '_blank');
