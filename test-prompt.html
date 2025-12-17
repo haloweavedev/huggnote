@@ -414,58 +414,65 @@ Output ONLY valid JSON. No markdown formatting.</textarea>
             
                             const result = await response.json();
             
-                            if (result.success) {
-                                // 3. Display Prompt (Raw output)
-                                document.getElementById('result-prompt').textContent = result.prompt;
-            
-                                // 4. Construct & Display MusicGPT JSON
-                                let promptText = result.prompt;
-                                let styleText = formObject.genreStyle || 'Pop';
-            
-                                // Try parsing JSON from Groq
-                                try {
-                                    let raw = result.prompt.trim();
-                                    // Remove markdown code blocks if present
-                                    if (raw.startsWith('```json')) {
-                                        raw = raw.replace(/^```json\s*/, '').replace(/\s*```$/, '');
-                                    } else if (raw.startsWith('```')) {
-                                        raw = raw.replace(/^```\s*/, '').replace(/\s*```$/, '');
-                                    }
-            
-                                    const parsed = JSON.parse(raw);
-                                    
-                                    if (parsed.prompt) {
-                                        promptText = parsed.prompt;
-                                    }
-                                    if (parsed.music_style) {
-                                        styleText = parsed.music_style;
-                                    }
-                                } catch (e) {
-                                    console.log("Response was not valid JSON, parsing failed.", e);
-                                    // Fallback: If it looks like JSON but failed (maybe minor syntax error), 
-                                    // try to regex extract the prompt to avoid sending raw JSON characters
-                                    const promptMatch = result.prompt.match(/"prompt":\s*"([^"]+)"/);
-                                    if (promptMatch && promptMatch[1]) {
-                                        promptText = promptMatch[1];
-                                    }
-                                }
-            
-                                // Now directly use the extracted/fallback values
-                                const musicGptBody = {
-                                    prompt: promptText,
-                                    music_style: styleText,
-                                    make_instrumental: false,
-                                    vocal_only: false
-                                };
-                                
-                                document.getElementById('result-json').textContent = JSON.stringify(musicGptBody, null, 2);
-                                updateCharCount(promptText); // Update count for the actual prompt sent to MusicGPT
-                            } else {
-                                document.getElementById('result-prompt').textContent = `Error: ${result.message}`;
-                                document.getElementById('result-json').textContent = JSON.stringify(result, null, 2);
-                                updateCharCount(''); // Reset count on error
-                            }
-            
+                                            if (result.success) {
+                                                let finalPromptForMusicGPT = result.prompt;
+                                                let finalStyleForMusicGPT = formObject.genreStyle || 'Pop';
+                            
+                                                // Try parsing JSON from Groq's raw response
+                                                try {
+                                                    let rawGroqResponse = result.prompt.trim();
+                                                    // Clean up markdown code blocks if present
+                                                    if (rawGroqResponse.startsWith('```json')) {
+                                                        rawGroqResponse = rawGroqResponse.replace(/^```json\s*/, '').replace(/\s*```$/, '');
+                                                    } else if (rawGroqResponse.startsWith('```')) {
+                                                        rawGroqResponse = rawGroqResponse.replace(/^```\s*/, '').replace(/\s*```$/, '');
+                                                    }
+                            
+                                                    const parsedGroqResponse = JSON.parse(rawGroqResponse);
+                                                    
+                                                    if (parsedGroqResponse.prompt) {
+                                                        finalPromptForMusicGPT = parsedGroqResponse.prompt;
+                                                    }
+                                                    if (parsedGroqResponse.music_style) {
+                                                        finalStyleForMusicGPT = parsedGroqResponse.music_style;
+                                                    }
+                                                } catch (e) {
+                                                    console.log("Groq response was not valid JSON, or parsing failed:", e);
+                                                    // Fallback: If it looks like JSON but parsing failed (e.g., truncation), 
+                                                    // try to extract the prompt string with a more robust regex
+                                                    const promptMatch = result.prompt.match(/"prompt"\s*:\s*"((?:[^"\\]|\\.)*)"/);
+                                                    if (promptMatch && promptMatch[1]) {
+                                                        finalPromptForMusicGPT = promptMatch[1].replace(/\\"/g, '"'); // Unescape quotes
+                                                    } else {
+                                                        // Last resort: just use the raw response, but try to strip common JSON wrapper if present
+                                                        finalPromptForMusicGPT = result.prompt.replace(/^\{"prompt":\s*"/, '').replace(/"\s*,\s*"music_style":\s*"[^"]*"\s*\}$/, '');
+                                                        finalPromptForMusicGPT = finalPromptForMusicGPT.replace(/^"/, '').replace(/"$/, ''); // strip any remaining outer quotes
+                                                    }
+                            
+                                                    const styleMatch = result.prompt.match(/"music_style"\s*:\s*"([^"]*)"/);
+                                                    if (styleMatch && styleMatch[1]) {
+                                                        finalStyleForMusicGPT = styleMatch[1];
+                                                    }
+                                                }
+                            
+                                                // 3. Display the CLEANED prompt
+                                                document.getElementById('result-prompt').textContent = finalPromptForMusicGPT;
+                                                updateCharCount(finalPromptForMusicGPT); // Update count for the actual prompt sent to MusicGPT
+                            
+                                                // 4. Construct & Display MusicGPT JSON with cleaned values
+                                                const musicGptBody = {
+                                                    prompt: finalPromptForMusicGPT,
+                                                    music_style: finalStyleForMusicGPT,
+                                                    make_instrumental: false,
+                                                    vocal_only: false
+                                                };
+                                                
+                                                document.getElementById('result-json').textContent = JSON.stringify(musicGptBody, null, 2);
+                                            } else {
+                                                document.getElementById('result-prompt').textContent = `Error: ${result.message}`;
+                                                document.getElementById('result-json').textContent = JSON.stringify(result, null, 2);
+                                                updateCharCount(''); // Reset count on error
+                                            }            
                         } catch (err) {
                             console.error(err);
                             document.getElementById('result-prompt').textContent = `Client Error: ${err.message}`;
