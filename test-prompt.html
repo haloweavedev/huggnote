@@ -288,9 +288,7 @@
             <div class="input-group">
                 <label>System Prompt Template</label>
                 <textarea id="system-prompt" class="code-editor" rows="20">You are an expert songwriter and music producer.
-Based on the user's request, generate a response in JSON format with two fields:
-1. "musical_prompt": A concise description (max 200 chars) of the style, mood, instruments, and tempo. Do not include specific story details here, just the musical vibe.
-2. "lyrics": Two verses and a chorus based on the "Story", "Message" and "About Them". Structure it clearly.
+Based on the user's request, generate a concise musical prompt (max 200 chars) that describes the style, mood, instruments, and tempo. Do not include specific story details here, just the musical vibe.
 
 Input Data:
 - Recipient: {{recipientName}} (Nickname: {{recipientNickname}})
@@ -306,7 +304,7 @@ Input Data:
   - Genre: {{genreStyle}}
   - Instruments: {{instrumentPreferences}}
 
-Output ONLY valid JSON. No markdown formatting.</textarea>
+Output ONLY the musical prompt string. No explanations or JSON formatting.</textarea>
             </div>
 
             <button id="generate-btn" class="btn btn-primary full-width">
@@ -393,39 +391,14 @@ Output ONLY valid JSON. No markdown formatting.</textarea>
                     document.getElementById('result-prompt').textContent = result.prompt;
 
                     // 4. Construct & Display MusicGPT JSON
-                    let promptText = result.prompt;
-                    let lyricsText = null;
-
-                    // Try parsing JSON from Groq
-                    try {
-                        const parsed = JSON.parse(result.prompt);
-                        if (parsed.musical_prompt) {
-                            promptText = parsed.musical_prompt;
-                        }
-                        if (parsed.lyrics) {
-                            if (typeof parsed.lyrics === 'object' && parsed.lyrics !== null) {
-                                // Convert object (e.g. {verse1: "...", chorus: "..."}) to string
-                                lyricsText = Object.values(parsed.lyrics).join('\n\n');
-                            } else {
-                                lyricsText = String(parsed.lyrics);
-                            }
-                        }
-                    } catch (e) {
-                        // Not JSON, assume plain text prompt
-                        console.log("Response was not JSON, using as raw prompt.");
-                    }
-
+                    // Now directly use the Groq result as the prompt for MusicGPT, without parsing for lyrics.
                     const musicGptBody = {
-                        prompt: promptText,
+                        prompt: result.prompt,
                         music_style: formObject.genreStyle || 'Pop',
                         make_instrumental: false,
                         vocal_only: false
                     };
                     
-                    if (lyricsText) {
-                        musicGptBody.lyrics = lyricsText;
-                    }
-
                     document.getElementById('result-json').textContent = JSON.stringify(musicGptBody, null, 2);
                 } else {
                     document.getElementById('result-prompt').textContent = `Error: ${result.message}`;
@@ -441,5 +414,7 @@ Output ONLY valid JSON. No markdown formatting.</textarea>
             }
         });
     </script>
+</body>
+</html>
 </body>
 </html>
