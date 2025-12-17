@@ -129,9 +129,9 @@ app.post('/api/test-groq-prompt', async (req, res) => {
 
         const chatCompletion = await groq.chat.completions.create({
             messages: [{ role: "user", content: finalSystemPrompt }],
-            model: "llama-3.3-70b-versatile",
-            temperature: 0.7,
-            max_completion_tokens: 150,
+            model: "openai/gpt-oss-120b",
+            temperature: 1,
+            max_completion_tokens: 8192,
         });
 
         console.log("[SERVER] Full Groq Response Object:", JSON.stringify(chatCompletion, null, 2));

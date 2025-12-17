@@ -405,7 +405,16 @@ Output ONLY valid JSON. No markdown formatting.</textarea>
 
                     // Try parsing JSON from Groq
                     try {
-                        const parsed = JSON.parse(result.prompt);
+                        let raw = result.prompt.trim();
+                        // Remove markdown code blocks if present
+                        if (raw.startsWith('```json')) {
+                            raw = raw.replace(/^```json\s*/, '').replace(/\s*```$/, '');
+                        } else if (raw.startsWith('```')) {
+                            raw = raw.replace(/^```\s*/, '').replace(/\s*```$/, '');
+                        }
+
+                        const parsed = JSON.parse(raw);
+                        
                         if (parsed.prompt) {
                             promptText = parsed.prompt;
                         }
@@ -413,8 +422,13 @@ Output ONLY valid JSON. No markdown formatting.</textarea>
                             styleText = parsed.music_style;
                         }
                     } catch (e) {
-                        // Not JSON, assume plain text prompt and default style
-                        console.log("Response was not JSON, using as raw prompt.");
+                        console.log("Response was not valid JSON, parsing failed.", e);
+                        // Fallback: If it looks like JSON but failed (maybe minor syntax error), 
+                        // try to regex extract the prompt to avoid sending raw JSON characters
+                        const promptMatch = result.prompt.match(/"prompt":\s*"([^"]+)"/);
+                        if (promptMatch && promptMatch[1]) {
+                            promptText = promptMatch[1];
+                        }
                     }
 
                     // Now directly use the extracted/fallback values
